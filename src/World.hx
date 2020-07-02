@@ -1,4 +1,5 @@
 package;
+import openfl.display.Bitmap;
 import openfl.display.MovieClip;
 
 class World extends MovieClip
@@ -6,6 +7,7 @@ class World extends MovieClip
 	private static var ZOOM_FACTOR:Int = 1;
 	private static var INITIAL_SCALE:Int = 3;
 	private var bitmaps:Bitmaps = null;
+	private var itemMatrix:Array<Array<Item>> = [];
 	
 	public function new() {		
 		super();
@@ -14,7 +16,13 @@ class World extends MovieClip
 		
 		bitmaps = new Bitmaps();
 		
-		addChild(bitmaps.DWARF);
+		addItem(bitmaps.DWARF, 2, 2);
+	}
+	
+	private function addItem(bitmap:Bitmap, x:Int, y:Int):Void {
+		bitmap.x = x * bitmaps.SPRITE_WIDTH;
+		bitmap.y = y * bitmaps.SPRITE_HEIGHT;
+		addChild(bitmap);
 	}
 	
 	public function zoomIn():Void {

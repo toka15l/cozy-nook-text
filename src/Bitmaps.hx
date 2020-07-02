@@ -9,8 +9,8 @@ import openfl.Assets;
 class Bitmaps 
 {
 	private static var SPRITE_FILE:String = "curses_800x600.png";
-	public static var SPRITE_WIDTH:Int = 10;
-	public static var SPRITE_HEIGHT:Int = 12;
+	public var SPRITE_WIDTH:Int = 10;
+	public var SPRITE_HEIGHT:Int = 12;
 	public var DWARF:Bitmap = null;
 
 	public function new() {
