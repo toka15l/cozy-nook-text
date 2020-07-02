@@ -27,8 +27,8 @@ class Main extends Sprite
 		}		
 	
 		// black background
-		var background:SolidBackground = new SolidBackground(0xFF0000, 20, 20);
-		addChild(background);
+		//var background:SolidBackground = new SolidBackground(0xFF0000, 20, 20);
+		//addChild(background);
 	
 		// scaling
 		var maxScaleWidth:Int = Math.floor(Lib.application.window.width / baseWidth);
@@ -37,11 +37,11 @@ class Main extends Sprite
 		if (scale > maxScaleHeight) {
 			scale = maxScaleHeight;
 		}
-		scaleX = scaleY = scale;
+		//scaleX = scaleY = scale;
 		
 		// center
-		x = Math.floor((Lib.application.window.width - width) / 2);
-		y = Math.floor((Lib.application.window.height - height) / 2);
+		//x = Math.floor((Lib.application.window.width - width) / 2);
+		//y = Math.floor((Lib.application.window.height - height) / 2);
 		
 		// mask
 		var stageMask:SolidBackground = new SolidBackground(0x00FF00, baseWidth, baseHeight);
@@ -106,18 +106,30 @@ class Main extends Sprite
 		}
 	}*/
 
-	private function keyUp(e:KeyboardEvent) {
+	private function keyUp(e:KeyboardEvent):Void {
 		// esc key
 		if (e.keyCode == 27) {
-			//if (foreground != null) {
-			//	closeForeground(null);
-			//} else {
-				exit();
-			//}
+			exit();
+		}
+		// up arrow
+		if (e.keyCode == 38) {
+			changeScale(1);
+		}
+		// down arrow
+		if (e.keyCode == 40) {
+			changeScale(-1);
 		}
 	}
 	
-	private function exit() {
+	private function exit():Void {
 		System.exit(0);
+	}
+	
+	private function changeScale(change:Int):Void {
+		if (scaleX + change <= 0) {
+			return;
+		}
+		scaleX += change;
+		scaleY += change;
 	}
 }
