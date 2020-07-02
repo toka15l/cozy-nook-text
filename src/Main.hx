@@ -12,11 +12,8 @@ import openfl.events.MouseEvent;
 class Main extends Sprite 
 {
 	private var testing:Bool = true;
-	private var baseWidth:Int = 80;
-	private var baseHeight:Int = 45;
 
-	public function new() 
-	{
+	public function new() {
 		super();
 		
 		// fullscreen
@@ -28,7 +25,7 @@ class Main extends Sprite
 		// keyboard listener
 		stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
 		
-		var graphic:Graphic = new Graphic();
+		var graphic:World = new World();
 		var dwarf:BitmapMovieClip = new BitmapMovieClip(graphic.DWARF);		
 		addChild(dwarf);
 		
@@ -36,29 +33,30 @@ class Main extends Sprite
 	}
 
 	private function keyUp(e:KeyboardEvent):Void {
-		// esc key
-		if (e.keyCode == 27) {
-			exit();
+		switch (e.keyCode) {
+			case 27: // esc
+				if (stage.displayState == StageDisplayState.FULL_SCREEN) {
+					exitFullscreen();
+				} else {
+					exit();
+				}
+			case 38: // up arrow
+			case 40: // down arrow
+			case 70: // f
+				enterFullscreen();
+			default:
 		}
-		// up arrow
-		if (e.keyCode == 38) {
-			changeScale(1);
-		}
-		// down arrow
-		if (e.keyCode == 40) {
-			changeScale(-1);
-		}
+	}
+	
+	private function enterFullscreen():Void {
+		stage.displayState = StageDisplayState.FULL_SCREEN;
+	}
+	
+	private function exitFullscreen():Void {
+		stage.displayState = StageDisplayState.NORMAL;
 	}
 	
 	private function exit():Void {
 		System.exit(0);
-	}
-	
-	private function changeScale(change:Int):Void {
-		if (scaleX + change <= 0) {
-			return;
-		}
-		scaleX += change;
-		scaleY += change;
 	}
 }
