@@ -14,6 +14,7 @@ class World extends MovieClip
 	public static var SPRITE_HEIGHT:Int = 12;
 	public var DWARF:Bitmap = null;
 	private static var ZOOM_FACTOR:Int = 1;
+	private static var INITIAL_SCALE:Int = 3;
 	
 	public function new() {
 		var path:String = "assets/img/" + SPRITE_FILE;
@@ -24,8 +25,13 @@ class World extends MovieClip
 			var rect:Rectangle = new Rectangle(20, 0, SPRITE_WIDTH, SPRITE_HEIGHT);
 			bitmapDataDestination.copyPixels(bitmapDataSource, rect, new Point(0, 0));
 			DWARF = new Bitmap(bitmapDataDestination);
-		}		
+		}	
+		
 		super();
+		
+		scaleX = scaleY = INITIAL_SCALE;
+		
+		addChild(DWARF);
 	}
 	
 	public function zoomIn():Void {

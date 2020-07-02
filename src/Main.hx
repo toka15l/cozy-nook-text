@@ -11,25 +11,20 @@ import openfl.events.MouseEvent;
 
 class Main extends Sprite 
 {
-	private var testing:Bool = true;
+	private var world:World = null;
 
 	public function new() {
 		super();
 		
 		// fullscreen
 		var stage:Stage = stage;
-		if (testing == false) {
-			stage.displayState = StageDisplayState.FULL_SCREEN;
-		}
 		
 		// keyboard listener
 		stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
 		
-		var graphic:World = new World();
-		var dwarf:BitmapMovieClip = new BitmapMovieClip(graphic.DWARF);		
-		addChild(dwarf);
-		
-		scaleX = scaleY = Settings.INITIAL_SCALE;
+		// world
+		world = new World();
+		addChild(world);
 	}
 
 	private function keyUp(e:KeyboardEvent):Void {
@@ -41,7 +36,9 @@ class Main extends Sprite
 					exit();
 				}
 			case 38: // up arrow
+				world.zoomIn();
 			case 40: // down arrow
+				world.zoomOut();
 			case 70: // f
 				enterFullscreen();
 			default:
