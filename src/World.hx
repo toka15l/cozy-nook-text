@@ -18,6 +18,7 @@ class World extends MovieClip
 		bitmaps = new Bitmaps();
 		
 		addItem(bitmaps.DWARF, 2, 2);
+		addItem(bitmaps.PLUS, 5, 5);
 	}
 	
 	private function addItem(bitmap:Bitmap, x:Int, y:Int):Void {
