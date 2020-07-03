@@ -31,7 +31,7 @@ class World extends MovieClip
 		var item:Item = cast e.target;
 		var tile:Tile = cast item.parent;
 		addItemToTile(item, tile.tileX + e.distanceX, tile.tileY + e.distanceY);
-		tile.removeChild(e.target);
+		removeItemFromTile(item, tile);
 	}
 	
 	private function addItemToTile(item:Item, x:Int, y:Int):Void {
@@ -47,6 +47,13 @@ class World extends MovieClip
 		}
 		tile.addItem(item);
 		item.addBitmap(bitmaps.getBitmapForCoordinates(item.spriteX, item.spriteY));
+	}
+	
+	private function removeItemFromTile(item:Item, tile:Tile):Void {
+		tile.removeChild(item);
+		if (tile.numChildren == 0) {
+			removeChild(tile);
+		}
 	}
 	
 	public function zoomIn():Void {
