@@ -2,16 +2,15 @@ package;
 import openfl.display.Bitmap;
 import openfl.display.MovieClip;
 import openfl.geom.Point;
-//import Item.ItemEvent;
+import Item.ItemEvent;
 
 class World extends MovieClip
 {
-	public var DIRECTION_LEFT:String = "left";
-	public var DIRECTION_RIGHT:String = "right";
 	private static var ZOOM_FACTOR:Int = 1;
 	private static var INITIAL_SCALE:Int = 3;
 	private var bitmaps:Bitmaps = null;
 	private var tiles:Array<Tile> = [];
+	private var plus:Plus = null;
 	
 	public function new() {
 		super();
@@ -21,7 +20,18 @@ class World extends MovieClip
 		bitmaps = new Bitmaps();
 		
 		addItemToTile(new Dwarf(), 1, 2);
-		addItemToTile(new Plus(), 5, 5);
+		
+		plus = new Plus();
+		addItemToTile(plus, 5, 5);
+		
+		addEventListener(ItemEvent.MOVE, itemMove);
+	}
+	
+	private function itemMove(e:ItemEvent):Void {
+		var item:Item = cast e.target;
+		var tile:Tile = cast item.parent;
+		addItemToTile(item, tile.tileX + e.distanceX, tile.tileY + e.distanceY);
+		tile.removeChild(e.target);
 	}
 	
 	private function addItemToTile(item:Item, x:Int, y:Int):Void {
@@ -55,25 +65,7 @@ class World extends MovieClip
 		scaleY += change;
 	}
 	
-	public function move(direction:String):Void {
-		/*for (x in 0...itemMatrix.length) {
-			for (y in 0...itemMatrix[x].length) {
-				var item:Item = itemMatrix[x][y];
-				if (item != null && item.bitmap == bitmaps.PLUS) {
-					switch (direction) {
-						case "left":
-							//itemMatrix[x][y - 1] = item;
-							addItem(item.bitmap, x - 1, y);
-						case "right":
-							addItem(item.bitmap, x + 1, y);
-						default:
-					}
-					//item.needsRedraw = true;
-					itemMatrix[x][y] = null;
-					trace(itemMatrix);
-					break;
-				}
-			}
-		}*/
+	public function move(distanceX:Int, distanceY:Int):Void {
+		plus.move(distanceX, distanceY);
 	}
 }

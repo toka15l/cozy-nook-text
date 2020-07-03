@@ -40,9 +40,9 @@ class Main extends Sprite
 			case 40: // down arrow
 				world.zoomOut();
 			case 37: // left
-				world.move(world.DIRECTION_LEFT);
+				world.move(-1, 0);
 			case 39: // right
-				world.move(world.DIRECTION_RIGHT);
+				world.move(1, 0);
 			case 70: // f
 				enterFullscreen();
 			default:

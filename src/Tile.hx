@@ -13,4 +13,8 @@ class Tile extends MovieClip
 	public function addItem(item:Item):Void {
 		addChild(item);
 	}
+	
+	public function removeItem(item:Item):Void {
+		removeChild(item);
+	}
 }
