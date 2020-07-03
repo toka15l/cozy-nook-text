@@ -2,13 +2,16 @@ package;
 import openfl.display.Bitmap;
 import openfl.display.MovieClip;
 import openfl.geom.Point;
+//import Item.ItemEvent;
 
 class World extends MovieClip
 {
+	public var DIRECTION_LEFT:String = "left";
+	public var DIRECTION_RIGHT:String = "right";
 	private static var ZOOM_FACTOR:Int = 1;
 	private static var INITIAL_SCALE:Int = 3;
 	private var bitmaps:Bitmaps = null;
-	private var itemMatrix:Array<Array<Item>> = [];
+	private var tiles:Array<Tile> = [];
 	
 	public function new() {
 		super();
@@ -17,42 +20,23 @@ class World extends MovieClip
 		
 		bitmaps = new Bitmaps();
 		
-		addItem(bitmaps.DWARF, 2, 2);
-		addItem(bitmaps.PLUS, 5, 5);
+		addItemToTile(new Dwarf(), 1, 2);
+		addItemToTile(new Plus(), 5, 5);
 	}
 	
-	private function addItem(bitmap:Bitmap, x:Int, y:Int):Void {
-		while (itemMatrix.length < x + 1) {
-			itemMatrix.push([]);
+	private function addItemToTile(item:Item, x:Int, y:Int):Void {
+		var tile:Tile = cast getChildByName("tile_" + x + "_" + y);
+		if (tile == null) {
+			tile = new Tile();
+			tile.tileX = x;
+			tile.tileY = y;
+			tile.x = x * Bitmaps.SPRITE_WIDTH;
+			tile.y = y * Bitmaps.SPRITE_HEIGHT;
+			tile.name = "tile_" + x + "_" + y;
+			addChild(tile);
 		}
-		while (itemMatrix[x].length < y) {
-			itemMatrix[x].push(null);
-		}
-		var item:Item = new Item();
-		item.bitmap = bitmap;
-		item.needsRedraw = true;
-		itemMatrix[x][y] = item;		
-		redraw();
-	}
-	
-	private function redraw():Void {
-		for (x in 0...itemMatrix.length) {
-			for (y in 0...itemMatrix[x].length) {
-				var item:Item = itemMatrix[x][y];
-				if (item != null && item.needsRedraw == true) {
-					var removeArray:Array<Bitmap> = cast getObjectsUnderPoint(new Point((x * bitmaps.SPRITE_WIDTH) + (bitmaps.SPRITE_WIDTH / 2), (y * bitmaps.SPRITE_HEIGHT) + (bitmaps.SPRITE_HEIGHT / 2)));
-					for (remove in removeArray) {
-						removeChild(remove);
-					}
-					if (item.bitmap != null) {
-						item.bitmap.x = x * bitmaps.SPRITE_WIDTH;
-						item.bitmap.y = y * bitmaps.SPRITE_HEIGHT;
-						addChild(item.bitmap);
-						item.needsRedraw = false;
-					}
-				}
-			}
-		}
+		tile.addItem(item);
+		item.addBitmap(bitmaps.getBitmapForCoordinates(item.spriteX, item.spriteY));
 	}
 	
 	public function zoomIn():Void {
@@ -69,5 +53,27 @@ class World extends MovieClip
 		}
 		scaleX += change;
 		scaleY += change;
+	}
+	
+	public function move(direction:String):Void {
+		/*for (x in 0...itemMatrix.length) {
+			for (y in 0...itemMatrix[x].length) {
+				var item:Item = itemMatrix[x][y];
+				if (item != null && item.bitmap == bitmaps.PLUS) {
+					switch (direction) {
+						case "left":
+							//itemMatrix[x][y - 1] = item;
+							addItem(item.bitmap, x - 1, y);
+						case "right":
+							addItem(item.bitmap, x + 1, y);
+						default:
+					}
+					//item.needsRedraw = true;
+					itemMatrix[x][y] = null;
+					trace(itemMatrix);
+					break;
+				}
+			}
+		}*/
 	}
 }

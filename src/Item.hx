@@ -1,11 +1,19 @@
 package;
 import openfl.display.Bitmap;
+import openfl.display.MovieClip;
 
-class Item
+class Item extends MovieClip
 {
-	public var bitmap:Bitmap = null;
-	public var needsRedraw:Bool = false;
+	public var spriteX:Int;
+	public var spriteY:Int;
 
-	public function new() {		
+	public function new() {
+		super();
+	}
+	
+	public function addBitmap(bitmap:Bitmap) {
+		if (bitmap != null) {
+			addChild(bitmap);
+		}
 	}
 }
