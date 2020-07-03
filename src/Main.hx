@@ -35,16 +35,24 @@ class Main extends Sprite
 				} else {
 					exit();
 				}
-			case 38: // up arrow
-				world.zoomIn();
-			case 40: // down arrow
-				world.zoomOut();
+			case 38: // up
+				world.move(0, -1);
+			case 40: // down
+				world.move(0, 1);
 			case 37: // left
 				world.move(-1, 0);
 			case 39: // right
 				world.move(1, 0);
 			case 70: // f
 				enterFullscreen();
+			case 187: // +=
+				if (e.shiftKey == true) {
+					world.zoomIn();
+				}
+			case 189: // -_
+				if (e.shiftKey == true) {
+					world.zoomOut();
+				}
 			default:
 		}
 	}
