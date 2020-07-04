@@ -35,6 +35,9 @@ class World extends MovieClip
 		setInterval(cycleItems, ITEM_CYCLE_INTERVAL);
 	}
 	
+	//================================================================================
+    // MULTIPLE ITEM CYCLING
+    //================================================================================	
 	private function registerContainsMultipleItems(e:TileEvent):Void {
 		tilesContainingMultipleItems.push(e.target);
 	}
@@ -49,6 +52,9 @@ class World extends MovieClip
 		}
 	}
 	
+	//================================================================================
+    // ITEM MOVING
+    //================================================================================
 	private function itemMove(e:ItemEvent):Void {
 		var item:Item = cast e.target;
 		var tile:Tile = cast item.parent;
@@ -56,6 +62,13 @@ class World extends MovieClip
 		removeItemFromTile(item, tile);
 	}
 	
+	public function move(distanceX:Int, distanceY:Int):Void {
+		plus.move(distanceX, distanceY);
+	}
+	
+	//================================================================================
+    // ITEM ADD/REMOVE
+    //================================================================================
 	private function addItemToTile(item:Item, x:Int, y:Int):Void {
 		var tile:Tile = cast getChildByName("tile_" + x + "_" + y);
 		if (tile == null) {
@@ -78,6 +91,9 @@ class World extends MovieClip
 		}
 	}
 	
+	//================================================================================
+    // ZOOM
+    //================================================================================
 	public function zoomIn():Void {
 		changeZoom(ZOOM_FACTOR);
 	}
@@ -92,9 +108,5 @@ class World extends MovieClip
 		}
 		scaleX += change;
 		scaleY += change;
-	}
-	
-	public function move(distanceX:Int, distanceY:Int):Void {
-		plus.move(distanceX, distanceY);
 	}
 }

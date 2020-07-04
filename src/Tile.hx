@@ -13,6 +13,9 @@ class Tile extends MovieClip
 		super();
 	}
 	
+	//================================================================================
+    // ITEM ADD/REMOVE
+    //================================================================================
 	public function addItem(item:Item):Void {
 		items.push(item);
 		addChild(item);
@@ -35,6 +38,9 @@ class Tile extends MovieClip
 		}
 	}
 	
+	//================================================================================
+    // MULTIPLE ITEM CYCLING
+    //================================================================================	
 	public function cycleItems():Void {
 		items[currentItemIndex].visible = false;
 		currentItemIndex++;
