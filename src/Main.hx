@@ -11,7 +11,7 @@ import openfl.events.MouseEvent;
 
 class Main extends Sprite 
 {
-	private static inline var SHIFT_MOVE_FACTOR:Int = 10;
+	private static inline var SHIFT_MOVE_MULTIPLIER:Int = 10;
 	private var world:World = null;
 
 	public function new() {
@@ -37,13 +37,13 @@ class Main extends Sprite
 					exit();
 				}
 			case 38: // up
-				world.move(0, (e.shiftKey == true ? SHIFT_MOVE_FACTOR : 1) * -1);
+				world.move(0, (e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1) * -1);
 			case 40: // down
-				world.move(0, (e.shiftKey == true ? SHIFT_MOVE_FACTOR : 1));
+				world.move(0, (e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1));
 			case 37: // left
-				world.move((e.shiftKey == true ? SHIFT_MOVE_FACTOR : 1) * -1, 0);
+				world.move((e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1) * -1, 0);
 			case 39: // right
-				world.move((e.shiftKey == true ? SHIFT_MOVE_FACTOR : 1), 0);
+				world.move((e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1), 0);
 			case 70: // f
 				enterFullscreen();
 			case 187: // +=
