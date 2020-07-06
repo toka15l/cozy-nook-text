@@ -1,11 +1,10 @@
 package;
 
-class Plus extends Item 
+class Asterisk extends Item 
 {	
 	public function new() {
-		spriteX = 11;
+		spriteX = 10;
 		spriteY = 2;
-		color = 0xFFFF00;
 		super();
 	}
 }

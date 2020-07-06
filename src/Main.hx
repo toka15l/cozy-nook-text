@@ -31,6 +31,7 @@ class Main extends Sprite
 	private function keyUp(e:KeyboardEvent):Void {
 		switch (e.keyCode) {
 			case 13: // enter
+				world.multipleTileSelect();
 			case 27: // esc
 				stage.displayState == StageDisplayState.FULL_SCREEN ? exitFullscreen() : exit();
 			case 37: // left
