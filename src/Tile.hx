@@ -20,7 +20,9 @@ class Tile extends MovieClip
 		items.push(item);
 		addChild(item);
 		if (items.length > 1) {
-			dispatchEvent(new TileEvent(TileEvent.REGISTER_CONTAINS_MULTIPLE_ITEMS));
+			if (items.length == 2) {
+				dispatchEvent(new TileEvent(TileEvent.REGISTER_CONTAINS_MULTIPLE_ITEMS));
+			}
 			items[currentItemIndex].visible = false;
 			currentItemIndex = items.length - 1;
 		}
@@ -44,7 +46,7 @@ class Tile extends MovieClip
 	public function cycleItems():Void {
 		items[currentItemIndex].visible = false;
 		currentItemIndex++;
-		if (currentItemIndex == items.length) {
+		if (currentItemIndex >= items.length) {
 			currentItemIndex = 0;
 		}
 		items[currentItemIndex].visible = true;
