@@ -8,7 +8,11 @@ class Menu extends Board
 		// initialize sprite bitmap data
 		this.spriteBitmapData = spriteBitmapData;
 		
-		var test:String = "P";
-		trace(test.charCodeAt(0));
+		var test:String = "Hello There!";
+		for (i in 0...test.length) {
+			var item:Item = new Item();
+			item.spriteCharCode = test.charCodeAt(i);
+			addItemsToTile([item], i, 0);
+		}
 	}	
 }
