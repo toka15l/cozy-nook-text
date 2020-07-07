@@ -71,8 +71,7 @@ class Wall extends Item
 class TopLeft extends Wall 
 {
 	public function new() {
-		spriteX = 9;
-		spriteY = 12;
+		spriteCharCode = 201;
 		super();
 	}	
 }
@@ -80,8 +79,7 @@ class TopLeft extends Wall
 class TopRight extends Wall 
 {
 	public function new() {
-		spriteX = 11;
-		spriteY = 11;
+		spriteCharCode = 187;
 		super();
 	}	
 }
@@ -89,8 +87,7 @@ class TopRight extends Wall
 class BottomLeft extends Wall 
 {
 	public function new() {
-		spriteX = 8;
-		spriteY = 12;
+		spriteCharCode = 200;
 		super();
 	}	
 }
@@ -98,8 +95,7 @@ class BottomLeft extends Wall
 class BottomRight extends Wall 
 {
 	public function new() {
-		spriteX = 12;
-		spriteY = 11;
+		spriteCharCode = 188;
 		super();
 	}	
 }
@@ -107,8 +103,7 @@ class BottomRight extends Wall
 class Horizontal extends Wall 
 {
 	public function new() {
-		spriteX = 13;
-		spriteY = 12;
+		spriteCharCode = 205;
 		super();
 	}	
 }
@@ -116,8 +111,7 @@ class Horizontal extends Wall
 class Vertical extends Wall 
 {
 	public function new() {
-		spriteX = 10;
-		spriteY = 11;
+		spriteCharCode = 186;
 		super();
 	}	
 }

@@ -9,8 +9,7 @@ import openfl.geom.Rectangle;
 
 class Item extends MovieClip
 {
-	public var spriteX:Int;
-	public var spriteY:Int;
+	public var spriteCharCode:Int;
 	public var color:Int;
 
 	public function new() {

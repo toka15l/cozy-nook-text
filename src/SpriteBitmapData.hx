@@ -11,26 +11,25 @@ class SpriteBitmapData
 	private static inline var SPRITE_FILE:String = "curses_800x600.png";
 	public static inline var SPRITE_WIDTH:Int = 10;
 	public static inline var SPRITE_HEIGHT:Int = 12;
-	private var spriteBitmapData:Array<Array<BitmapData>> = [];
+	private var spriteBitmapData:Array<BitmapData> = [];
 
 	public function new() {
 		var path:String = "assets/img/" + SPRITE_FILE;
 		if (FileSystem.exists(path)) {
 			var spriteFile:Bitmap = new Bitmap(Assets.getBitmapData(path));
-			var bitmapDataSource:BitmapData = spriteFile.bitmapData;
+			var bitmapDataSource:BitmapData = spriteFile.bitmapData;			
+			for (y in 0...Std.int(spriteFile.height / SPRITE_HEIGHT)) {
 				for (x in 0...Std.int(spriteFile.width / SPRITE_WIDTH)) {
-				spriteBitmapData.push([]);
-				for (y in 0...Std.int(spriteFile.height / SPRITE_HEIGHT)) {
 					var bitmapDataDestination:BitmapData = new BitmapData(SPRITE_WIDTH, SPRITE_HEIGHT);
 					var rect:Rectangle = new Rectangle(x * SPRITE_WIDTH, y * SPRITE_HEIGHT, SPRITE_WIDTH, SPRITE_HEIGHT);
 					bitmapDataDestination.copyPixels(bitmapDataSource, rect, new Point(0, 0));
-					spriteBitmapData[x].push(bitmapDataDestination);
+					spriteBitmapData.push(bitmapDataDestination);
 				}
 			}
 		}	
 	}
 	
-	public function getBitmapDataForCoordinates(x:Int, y:Int):BitmapData {
-		return spriteBitmapData[x][y];
+	public function getBitmapDataForCharCode(charCode:Int):BitmapData {
+		return spriteBitmapData[charCode];
 	}
 }

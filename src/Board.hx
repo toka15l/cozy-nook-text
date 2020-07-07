@@ -80,7 +80,7 @@ class Board extends MovieClip
 		}
 		for (item in items) {
 			tile.addItem(item);
-			item.setBitmapData(spriteBitmapData.getBitmapDataForCoordinates(item.spriteX, item.spriteY));
+			item.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(item.spriteCharCode));
 		}
 	}
 	
