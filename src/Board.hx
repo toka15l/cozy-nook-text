@@ -1,11 +1,12 @@
 package;
 import openfl.display.Bitmap;
-import openfl.display.MovieClip;
 import Item.ItemEvent;
 import Tile.TileEvent;
+import Container.ContainerEvent;
 import openfl.Lib.*;
+import openfl.display.Sprite;
 
-class Board extends MovieClip
+class Board extends Sprite
 {
 	private static inline var ZOOM_FACTOR:Int = 1;
 	private static inline var INITIAL_SCALE:Int = 3;
@@ -28,6 +29,8 @@ class Board extends MovieClip
 		addEventListener(ItemEvent.MOVE, itemMove);
 		addEventListener(TileEvent.REGISTER_CONTAINS_MULTIPLE_ITEMS, registerContainsMultipleItems);
 		addEventListener(TileEvent.DEREGISTER_CONTAINS_MULTIPLE_ITEMS, deregisterContainsMultipleItems);
+		addEventListener(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, pickUpItem);
+		
 		
 		// multiple item cycle interval
 		setInterval(cycleItems, ITEM_CYCLE_INTERVAL);	
@@ -65,6 +68,15 @@ class Board extends MovieClip
 	}
 	
 	//================================================================================
+    // ITEM PICKUP
+    //================================================================================
+	private function pickUpItem(e:ContainerEvent):Void {
+		var item:Item = cast e.target;
+		var tile:Tile = cast item.parent;
+		addItemsToTile([e.item], tile.tileX, tile.tileY);
+	}
+	
+	//================================================================================
     // ITEM ADD/REMOVE
     //================================================================================
 	private function addItemsToTile(items:Array<Item>, x:Int, y:Int):Void {
@@ -91,6 +103,14 @@ class Board extends MovieClip
 				removeChild(tile);
 			}
 		}
+	}
+	
+	//================================================================================
+    // TILE SELECT
+    //================================================================================
+	public function tileSelect():Void {
+		var tile:Tile = cast cursor.parent;
+		tile.tileSelect();
 	}
 	
 	//================================================================================

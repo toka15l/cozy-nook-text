@@ -15,11 +15,31 @@ class World extends Board
 		cursor = new Plus();
 		addItemsToTile([cursor], 5, 5);
 		
-		// test building
-		var test:Building = new Building(2, 2, 5, 5);
-		for (item in test.items) {
+		// test existing building
+		var existingBuilding:Building = new Building(2, 2, 5, 5);
+		for (item in existingBuilding.items) {
 			addItemsToTile([item[0]], item[1], item[2]);
-		}			
+		}
+		
+		// test container object
+		var containerObject:ContainerObject = new ContainerObject();
+		containerObject.itemClass = Dwarf;
+		containerObject.name = "Winston";
+		containerObject.count = 2;
+		var winston:Item = Type.createInstance(containerObject.itemClass, []);
+		addItemsToTile([winston], 3, 3);
+		
+		// test barrel
+		var testBarrel:Barrel = new Barrel();
+		var pickles:ContainerObject = new ContainerObject();
+		pickles.itemClass = Pickle;
+		pickles.name = "Pickles";
+		pickles.count = 34;
+		testBarrel.addItem(pickles);
+		addItemsToTile([testBarrel], 4, 4);
+		
+		// test pickle
+		addItemsToTile([new Pickle()], 7, 4);
 	}
 	
 	//================================================================================

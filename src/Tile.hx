@@ -1,8 +1,8 @@
 package;
-import openfl.display.MovieClip;
+import openfl.display.Sprite;
 import openfl.events.Event;
 
-class Tile extends MovieClip 
+class Tile extends Sprite 
 {
 	public var tileX:Int = null;
 	public var tileY:Int = null;
@@ -50,6 +50,17 @@ class Tile extends MovieClip
 			currentItemIndex = 0;
 		}
 		items[currentItemIndex].visible = true;
+	}
+	
+	//================================================================================
+    // TILE SELECT
+    //================================================================================
+	public function tileSelect():Void {
+		for (item in items) {
+			if (Type.getClass(item) != Plus) {
+				item.itemSelect();
+			}
+		}
 	}
 }
 
