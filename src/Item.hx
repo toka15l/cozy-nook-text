@@ -1,20 +1,31 @@
 package;
 import openfl.display.Bitmap;
+import openfl.display.BitmapData;
 import openfl.display.MovieClip;
+import openfl.display.Shape;
 import openfl.events.Event;
+import openfl.geom.ColorTransform;
+import openfl.geom.Rectangle;
 
 class Item extends MovieClip
 {
 	public var spriteX:Int;
 	public var spriteY:Int;
+	public var color:Int;
 
 	public function new() {
 		super();
 	}
 	
-	public function addBitmap(bitmap:Bitmap) {
-		if (bitmap != null) {
-			addChild(bitmap);
+	public function setBitmapData(bitmapData:BitmapData) {
+		if (color != null) {
+			var colorTransform:ColorTransform = new ColorTransform();
+			colorTransform.color = color;
+			var colorBitmapData:BitmapData = bitmapData.clone();
+			colorBitmapData.colorTransform(new Rectangle(0, 0, SpriteBitmapData.SPRITE_WIDTH, SpriteBitmapData.SPRITE_HEIGHT), colorTransform);
+			addChild(new Bitmap(colorBitmapData));
+		} else {
+			addChild(new Bitmap(bitmapData));
 		}
 	}
 	
