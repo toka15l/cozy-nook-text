@@ -12,7 +12,9 @@ import openfl.events.MouseEvent;
 class Main extends Sprite 
 {
 	private static inline var SHIFT_MOVE_MULTIPLIER:Int = 10;
+	private var spriteBitmapData:SpriteBitmapData = null;
 	private var world:World = null;
+	private var menu:Menu = null;
 
 	public function new() {
 		super();
@@ -23,9 +25,16 @@ class Main extends Sprite
 		// keyboard listener
 		stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
 		
+		// load sprite bitmap data
+		spriteBitmapData = new SpriteBitmapData();
+		
 		// world
-		world = new World();
+		world = new World(spriteBitmapData);
 		addChild(world);
+		
+		// menu
+		menu = new Menu(spriteBitmapData);
+		addChild(menu);
 	}
 
 	private function keyUp(e:KeyboardEvent):Void {
