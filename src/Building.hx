@@ -63,7 +63,7 @@ class Building
 class Wall extends Item 
 {	
 	public function new() {
-		color = 0x8B4513;
+		color = 0x696969;
 		super();
 	}
 }

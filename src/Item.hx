@@ -1,13 +1,13 @@
 package;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
-import openfl.display.MovieClip;
 import openfl.display.Shape;
+import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.geom.ColorTransform;
 import openfl.geom.Rectangle;
 
-class Item extends MovieClip
+class Item extends Sprite
 {
 	public var spriteCharCode:Int;
 	public var color:Int;
@@ -30,6 +30,10 @@ class Item extends MovieClip
 	
 	public function move(distanceX:Int, distanceY:Int):Void {
 		dispatchEvent(new ItemEvent(ItemEvent.MOVE, distanceX, distanceY));
+	}
+	
+	public function itemSelect():Void {
+		// exists to be overridden
 	}
 }
 
