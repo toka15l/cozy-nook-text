@@ -1,6 +1,6 @@
 package;
 import openfl.display.Bitmap;
-import Item.ItemEvent;
+import Item.ItemMoveEvent;
 import Tile.TileEvent;
 import Container.ContainerEvent;
 import openfl.Lib.*;
@@ -26,7 +26,7 @@ class Board extends Sprite
 		this.spriteBitmapData = spriteBitmapData;
 		
 		// event listeners
-		addEventListener(ItemEvent.MOVE, itemMove);
+		addEventListener(ItemMoveEvent.MOVE, itemMove);
 		addEventListener(TileEvent.REGISTER_CONTAINS_MULTIPLE_ITEMS, registerContainsMultipleItems);
 		addEventListener(TileEvent.DEREGISTER_CONTAINS_MULTIPLE_ITEMS, deregisterContainsMultipleItems);
 		addEventListener(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, pickUpItem);
@@ -56,7 +56,7 @@ class Board extends Sprite
 	//================================================================================
     // ITEM MOVING
     //================================================================================
-	private function itemMove(e:ItemEvent):Void {
+	private function itemMove(e:ItemMoveEvent):Void {
 		var item:Item = cast e.target;
 		var tile:Tile = cast item.parent;
 		addItemsToTile([item], tile.tileX + e.distanceX, tile.tileY + e.distanceY);

@@ -22,8 +22,9 @@ class Main extends Sprite
 		// fullscreen
 		var stage:Stage = stage;
 		
-		// keyboard listener
+		// event listeners
 		stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
+		addEventListener(Item.ItemSelectEvent.REQUEST_MENU_OBJECTS, requestMenuObjects);
 		
 		// load sprite bitmap data
 		spriteBitmapData = new SpriteBitmapData();
@@ -72,6 +73,10 @@ class Main extends Sprite
 			case MODE_BUILD:
 				world.multipleTileSelect();
 		}
+	}
+	
+	private function requestMenuObjects(e:Item.ItemSelectEvent):Void {
+		menu.addMultipleMenuObjects(e.menuObjects, 1, 7);
 	}
 	
 	private function enterFullscreen():Void {
