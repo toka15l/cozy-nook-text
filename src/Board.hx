@@ -12,7 +12,6 @@ class Board extends Sprite
 	private static inline var INITIAL_SCALE:Int = 3;
 	private static inline var ITEM_CYCLE_INTERVAL:Int = 800;
 	public var spriteBitmapData:SpriteBitmapData;
-	private var tiles:Array<Tile> = [];
 	private var cursor:Plus = null;
 	private var tilesContainingMultipleItems:Array<Tile> = [];
 	
@@ -103,6 +102,20 @@ class Board extends Sprite
 				removeChild(tile);
 			}
 		}
+	}
+	
+	public function emptyAllTiles():Void {
+		while (numChildren > 0) {
+			var tile:Tile = cast getChildAt(0);
+			removeItemsFromTile(tile.items, tile);
+		}
+	}
+	
+	public function isEmpty():Bool {
+		if (numChildren == 0) {
+			return true;
+		}
+		return false;
 	}
 	
 	//================================================================================

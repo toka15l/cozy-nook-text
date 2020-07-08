@@ -43,7 +43,11 @@ class Main extends Sprite
 			case 13: // enter
 				executeMode();
 			case 27: // esc
-				stage.displayState == StageDisplayState.FULL_SCREEN ? exitFullscreen() : exit();
+				if (menu.isEmpty() == false) {
+					menu.emptyAllTiles();
+				} else {
+					stage.displayState == StageDisplayState.FULL_SCREEN ? exitFullscreen() : exit();
+				}
 			case 37: // left
 				world.move((e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1) * -1, 0);
 			case 38: // up
