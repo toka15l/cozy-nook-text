@@ -49,7 +49,11 @@ class Main extends Sprite
 					stage.displayState == StageDisplayState.FULL_SCREEN ? exitFullscreen() : exit();
 				}
 			case 37: // left
-				world.move((e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1) * -1, 0);
+				if (menu.isEmpty() == false) {
+					menu.previousSelection();
+				} else {
+					world.move((e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1) * -1, 0);
+				}
 			case 38: // up
 				if (menu.isEmpty() == false) {
 					menu.previousSelection();
@@ -63,7 +67,11 @@ class Main extends Sprite
 					world.move(0, (e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1));
 				}				
 			case 39: // right
-				world.move((e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1), 0);
+				if (menu.isEmpty() == false) {
+					menu.nextSelection();
+				} else {
+					world.move((e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1), 0);
+				}
 			case 66: // b
 				currentMode = MODE_BUILD;
 			case 70: // f
