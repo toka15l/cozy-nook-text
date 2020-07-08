@@ -15,6 +15,10 @@ class Barrel extends Container
 		dropItem.string = "Drop pickle";
 		menuObjects.push(dropItem);
 		
+		var petWinston:MenuObject = new MenuObject();
+		petWinston.string = "Pet Winston";
+		menuObjects.push(petWinston);
+		
 		super();
 	}
 }
