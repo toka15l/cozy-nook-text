@@ -4,14 +4,14 @@ class Menu extends Board
 {
 	private static inline var DESELECTED_COLOR = 0x777777;
 	private var allMenuObjects:Array<MenuObject> = [];
+	private var currentY:Int = 0;
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
 		this.spriteBitmapData = spriteBitmapData;
 		super(spriteBitmapData);
 	}
 	
-	public function addMultipleMenuObjects(menuObjects:Array<MenuObject>, startX:Int, staryY:Int):Void {
-		var currentY:Int = staryY;
+	public function addMultipleMenuObjects(menuObjects:Array<MenuObject>, startX:Int):Void {
 		var preselected:Bool = false;
 		for (i in 0...menuObjects.length) {
 			if (menuObjects[i].selected == true) {
@@ -86,9 +86,11 @@ class Menu extends Board
 	
 	public function exitWithoutSelection():Void {
 		for (menuObject in allMenuObjects) {
+			menuObject.selected = false;
 			menuObject.items = [];
 		}
 		emptyAllTiles();
 		allMenuObjects = [];
+		currentY = 0;
 	}
 }

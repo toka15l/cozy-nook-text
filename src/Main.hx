@@ -96,7 +96,7 @@ class Main extends Sprite
 	}
 	
 	private function requestMenuObjects(e:Item.ItemSelectEvent):Void {
-		menu.addMultipleMenuObjects(e.menuObjects, 1, 7);
+		menu.addMultipleMenuObjects(e.menuObjects, 1);
 	}
 	
 	private function enterFullscreen():Void {
