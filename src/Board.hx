@@ -15,11 +15,11 @@ class Board extends Sprite
 	private var cursor:Plus = null;
 	private var tilesContainingMultipleItems:Array<Tile> = [];
 	
-	public function new(spriteBitmapData:SpriteBitmapData) {
+	public function new(spriteBitmapData:SpriteBitmapData, initialScale:Int = null) {
 		super();
 		
 		// set initial scale (zoom)
-		scaleX = scaleY = INITIAL_SCALE;
+		scaleX = scaleY = initialScale != null ? initialScale : INITIAL_SCALE;
 		
 		// initialize sprite bitmap data
 		this.spriteBitmapData = spriteBitmapData;

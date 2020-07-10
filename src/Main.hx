@@ -5,6 +5,7 @@ import openfl.display.Stage;
 import openfl.display.StageDisplayState;
 import openfl.events.KeyboardEvent;
 import openfl.system.System;
+import menu.Menu;
 
 class Main extends Sprite 
 {

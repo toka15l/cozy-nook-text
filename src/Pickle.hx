@@ -1,4 +1,5 @@
 package;
+import menu.MenuObject;
 
 class Pickle extends Item
 {	

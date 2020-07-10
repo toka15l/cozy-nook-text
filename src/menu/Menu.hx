@@ -1,4 +1,4 @@
-package;
+package menu;
 
 class Menu extends Board
 {
@@ -8,7 +8,7 @@ class Menu extends Board
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
 		this.spriteBitmapData = spriteBitmapData;
-		super(spriteBitmapData);
+		super(spriteBitmapData, 1);
 	}
 	
 	public function addMultipleMenuObjects(menuObjects:Array<MenuObject>, startX:Int):Void {

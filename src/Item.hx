@@ -5,6 +5,8 @@ import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.geom.ColorTransform;
 import openfl.geom.Rectangle;
+import menu.Menu;
+import menu.MenuObject;
 
 class Item extends Sprite
 {
