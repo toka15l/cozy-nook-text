@@ -25,7 +25,7 @@ class Main extends Sprite
 		
 		// event listeners
 		stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
-		addEventListener(Item.ItemSelectEvent.REQUEST_MENU_OBJECTS, requestMenuObjects);
+		addEventListener(Item.ItemSelectEvent.REQUEST_ACTIONS, requestActions);
 		
 		// load sprite bitmap data
 		spriteBitmapData = new SpriteBitmapData();
@@ -96,8 +96,8 @@ class Main extends Sprite
 		}
 	}
 	
-	private function requestMenuObjects(e:Item.ItemSelectEvent):Void {
-		menu.addMultipleMenuObjects(e.menuObjects, 1);
+	private function requestActions(e:Item.ItemSelectEvent):Void {
+		menu.addMultipleActions(e.actions, 1);
 	}
 	
 	private function enterFullscreen():Void {

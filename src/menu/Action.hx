@@ -1,6 +1,6 @@
 package menu;
 
-class MenuObject
+class Action
 {
 	public var string:String;
 	public var selected:Bool = false;

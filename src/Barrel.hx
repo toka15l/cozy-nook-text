@@ -1,5 +1,5 @@
 package;
-import menu.MenuObject;
+import menu.Action;
 
 class Barrel extends Container
 {
@@ -7,18 +7,18 @@ class Barrel extends Container
 		spriteCharCode = 233;
 		color = 0xA0522D;
 		
-		menuObjects = [];
-		var pickupItem:MenuObject = new MenuObject();
+		actions = [];
+		var pickupItem:Action = new Action();
 		pickupItem.string = "Pick up pickle";
-		menuObjects.push(pickupItem);
+		actions.push(pickupItem);
 		
-		var dropItem:MenuObject = new MenuObject();
+		var dropItem:Action = new Action();
 		dropItem.string = "Drop pickle";
-		menuObjects.push(dropItem);
+		actions.push(dropItem);
 		
-		var petWinston:MenuObject = new MenuObject();
+		var petWinston:Action = new Action();
 		petWinston.string = "Pet Winston";
-		menuObjects.push(petWinston);
+		actions.push(petWinston);
 		
 		super();
 	}
