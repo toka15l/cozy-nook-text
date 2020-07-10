@@ -5,6 +5,7 @@ class Menu extends Board
 	private static inline var DESELECTED_COLOR = 0x777777;
 	private var allActions:Array<Action> = [];
 	private var currentY:Int = 0;
+	private var currentAction:Action = null;
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
 		this.spriteBitmapData = spriteBitmapData;
@@ -38,7 +39,7 @@ class Menu extends Board
 			}
 			item.spriteCharCode = action.string.charCodeAt(i);
 			addItemsToTile([item], x + i, y);
-			action.items.push(item);
+			action.menuItems.push(item);
 		}
 	}
 	
@@ -73,7 +74,7 @@ class Menu extends Board
 	private function selectAction(action:Action, select:Bool = true):Void {
 		var startX:Int = -1;
 		var startY:Int = -1;
-		for (item in action.items) {
+		for (item in action.menuItems) {
 			var tile:Tile = cast item.parent;
 			if (startX == -1 || tile.tileX < startX) {
 				startX = tile.tileX;
@@ -84,17 +85,25 @@ class Menu extends Board
 			tile.removeItem(item);
 		}
 		action.selected = select;
-		action.items = [];
+		action.menuItems = [];
 		addAction(action, startX, startY);
+		currentAction = action;
 	}
 	
-	public function exitWithoutSelection():Void {
+	public function exitMenu():Void {
 		for (action in allActions) {
 			action.selected = false;
-			action.items = [];
+			action.menuItems = [];
 		}
 		emptyAllTiles();
 		allActions = [];
 		currentY = 0;
+	}
+	
+	public function executeSelectedAction():Void {
+		if (currentAction.action != null) {
+			currentAction.action();
+			exitMenu();
+		}
 	}
 }

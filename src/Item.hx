@@ -39,6 +39,10 @@ class Item extends Sprite
 			dispatchEvent(new ItemSelectEvent(ItemSelectEvent.REQUEST_ACTIONS, actions));
 		}
 	}
+	
+	public function pickUp():Void {
+		dispatchEvent(new ItemEvent(ItemEvent.PICKUP));
+	}
 }
 
 class ItemMoveEvent extends Event {
@@ -61,6 +65,15 @@ class ItemSelectEvent extends Event {
 	public function new(type:String, actions:Array<Action>)
     {
 		this.actions = actions;
+        super(type, true, false);
+    }
+}
+
+class ItemEvent extends Event {
+	public static inline var PICKUP = "pickUp";
+	
+	public function new(type:String)
+    {
         super(type, true, false);
     }
 }

@@ -8,13 +8,14 @@ class Pickle extends Item
 		color = 0x98FB98;
 		
 		actions = [];
-		var move:Action = new Action();
-		move.string = "Move";
-		actions.push(move);
+		var actionPickUp:Action = new Action();
+		actionPickUp.string = "Pick Up";
+		actionPickUp.action = pickUp;
+		actions.push(actionPickUp);
 		
-		var eatPickle:Action = new Action();
-		eatPickle.string = "Eat Pickle";
-		actions.push(eatPickle);
+		var actionEatPickle:Action = new Action();
+		actionEatPickle.string = "Eat Pickle";
+		actions.push(actionEatPickle);
 		
 		super();
 	}

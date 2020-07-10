@@ -4,6 +4,7 @@ import Tile.TileEvent;
 import Container.ContainerEvent;
 import openfl.Lib.*;
 import openfl.display.Sprite;
+import Item.ItemEvent;
 
 class Board extends Sprite
 {
@@ -13,6 +14,7 @@ class Board extends Sprite
 	public var spriteBitmapData:SpriteBitmapData;
 	private var cursor:Plus = null;
 	private var tilesContainingMultipleItems:Array<Tile> = [];
+	private var carriedItems:Array<Item> = [];
 	
 	public function new(spriteBitmapData:SpriteBitmapData, initialScale:Int = null) {
 		super();
@@ -27,8 +29,8 @@ class Board extends Sprite
 		addEventListener(ItemMoveEvent.MOVE, itemMove);
 		addEventListener(TileEvent.REGISTER_CONTAINS_MULTIPLE_ITEMS, registerContainsMultipleItems);
 		addEventListener(TileEvent.DEREGISTER_CONTAINS_MULTIPLE_ITEMS, deregisterContainsMultipleItems);
-		addEventListener(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, pickUpItem);
-		
+		//addEventListener(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, removeItemFromContainer);
+		addEventListener(ItemEvent.PICKUP, pickUpItem);
 		
 		// multiple item cycle interval
 		setInterval(cycleItems, ITEM_CYCLE_INTERVAL);	
@@ -63,15 +65,30 @@ class Board extends Sprite
 	
 	public function move(distanceX:Int, distanceY:Int):Void {
 		cursor.move(distanceX, distanceY);
+		for (item in carriedItems) {
+			item.move(distanceX, distanceY);
+		}
 	}
 	
 	//================================================================================
     // ITEM PICKUP
     //================================================================================
-	private function pickUpItem(e:ContainerEvent):Void {
+	// TODO: add item pickup from containter
+	/*private function pickUpItem(e:ContainerEvent):Void {
 		var item:Item = cast e.target;
 		var tile:Tile = cast item.parent;
 		addItemsToTile([e.item], tile.tileX, tile.tileY);
+	}*/
+	
+	/*private function removeItemFromContainer(e:ContainerEvent):Void {
+		var item:Item = cast e.target;
+		var tile:Tile = cast item.parent;
+		addItemsToTile([e.item], tile.tileX, tile.tileY);
+		carriedItems.push(item);
+	}*/
+	
+	private function pickUpItem(e:ItemEvent):Void {
+		carriedItems.push(e.target);
 	}
 	
 	//================================================================================

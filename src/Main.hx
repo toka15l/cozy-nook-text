@@ -42,10 +42,10 @@ class Main extends Sprite
 	private function keyUp(e:KeyboardEvent):Void {
 		switch (e.keyCode) {
 			case 13: // enter
-				menu.isEmpty() == false ? null : executeMode();
+				menu.isEmpty() == false ? menu.executeSelectedAction() : executeMode();
 			case 27: // esc
 				if (menu.isEmpty() == false) {
-					menu.exitWithoutSelection();
+					menu.exitMenu();
 				} else {
 					stage.displayState == StageDisplayState.FULL_SCREEN ? exitFullscreen() : exit();
 				}
