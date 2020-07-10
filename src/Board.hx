@@ -1,5 +1,4 @@
 package;
-import openfl.display.Bitmap;
 import Item.ItemMoveEvent;
 import Tile.TileEvent;
 import Container.ContainerEvent;

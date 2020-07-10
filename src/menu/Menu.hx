@@ -12,6 +12,10 @@ class Menu extends Board
 	}
 	
 	public function addMultipleMenuObjects(menuObjects:Array<MenuObject>, startX:Int):Void {
+		// insert space between menu object sections
+		if (currentY != 0) {
+			currentY += 2;
+		}		
 		var preselected:Bool = false;
 		for (i in 0...menuObjects.length) {
 			if (menuObjects[i].selected == true) {
