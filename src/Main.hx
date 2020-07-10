@@ -5,6 +5,7 @@ import openfl.display.Stage;
 import openfl.display.StageDisplayState;
 import openfl.events.KeyboardEvent;
 import openfl.system.System;
+import menu.Menu;
 
 class Main extends Sprite 
 {
@@ -22,8 +23,9 @@ class Main extends Sprite
 		// fullscreen
 		var stage:Stage = stage;
 		
-		// keyboard listener
+		// event listeners
 		stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
+		addEventListener(Item.ItemSelectEvent.REQUEST_MENU_OBJECTS, requestMenuObjects);
 		
 		// load sprite bitmap data
 		spriteBitmapData = new SpriteBitmapData();
@@ -40,17 +42,37 @@ class Main extends Sprite
 	private function keyUp(e:KeyboardEvent):Void {
 		switch (e.keyCode) {
 			case 13: // enter
-				executeMode();
+				menu.isEmpty() == false ? null : executeMode();
 			case 27: // esc
-				stage.displayState == StageDisplayState.FULL_SCREEN ? exitFullscreen() : exit();
+				if (menu.isEmpty() == false) {
+					menu.exitWithoutSelection();
+				} else {
+					stage.displayState == StageDisplayState.FULL_SCREEN ? exitFullscreen() : exit();
+				}
 			case 37: // left
-				world.move((e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1) * -1, 0);
+				if (menu.isEmpty() == false) {
+					menu.previousSelection();
+				} else {
+					world.move((e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1) * -1, 0);
+				}
 			case 38: // up
-				world.move(0, (e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1) * -1);
+				if (menu.isEmpty() == false) {
+					menu.previousSelection();
+				} else {
+					world.move(0, (e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1) * -1);
+				}
 			case 40: // down
-				world.move(0, (e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1));
+				if (menu.isEmpty() == false) {
+					menu.nextSelection();
+				} else {
+					world.move(0, (e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1));
+				}				
 			case 39: // right
-				world.move((e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1), 0);
+				if (menu.isEmpty() == false) {
+					menu.nextSelection();
+				} else {
+					world.move((e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1), 0);
+				}
 			case 66: // b
 				currentMode = MODE_BUILD;
 			case 70: // f
@@ -72,6 +94,10 @@ class Main extends Sprite
 			case MODE_BUILD:
 				world.multipleTileSelect();
 		}
+	}
+	
+	private function requestMenuObjects(e:Item.ItemSelectEvent):Void {
+		menu.addMultipleMenuObjects(e.menuObjects, 1);
 	}
 	
 	private function enterFullscreen():Void {

@@ -1,6 +1,6 @@
 package;
 import openfl.display.Bitmap;
-import Item.ItemEvent;
+import Item.ItemMoveEvent;
 import Tile.TileEvent;
 import Container.ContainerEvent;
 import openfl.Lib.*;
@@ -12,21 +12,20 @@ class Board extends Sprite
 	private static inline var INITIAL_SCALE:Int = 3;
 	private static inline var ITEM_CYCLE_INTERVAL:Int = 800;
 	public var spriteBitmapData:SpriteBitmapData;
-	private var tiles:Array<Tile> = [];
 	private var cursor:Plus = null;
 	private var tilesContainingMultipleItems:Array<Tile> = [];
 	
-	public function new(spriteBitmapData:SpriteBitmapData) {
+	public function new(spriteBitmapData:SpriteBitmapData, initialScale:Int = null) {
 		super();
 		
 		// set initial scale (zoom)
-		scaleX = scaleY = INITIAL_SCALE;
+		scaleX = scaleY = initialScale != null ? initialScale : INITIAL_SCALE;
 		
 		// initialize sprite bitmap data
 		this.spriteBitmapData = spriteBitmapData;
 		
 		// event listeners
-		addEventListener(ItemEvent.MOVE, itemMove);
+		addEventListener(ItemMoveEvent.MOVE, itemMove);
 		addEventListener(TileEvent.REGISTER_CONTAINS_MULTIPLE_ITEMS, registerContainsMultipleItems);
 		addEventListener(TileEvent.DEREGISTER_CONTAINS_MULTIPLE_ITEMS, deregisterContainsMultipleItems);
 		addEventListener(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, pickUpItem);
@@ -56,7 +55,7 @@ class Board extends Sprite
 	//================================================================================
     // ITEM MOVING
     //================================================================================
-	private function itemMove(e:ItemEvent):Void {
+	private function itemMove(e:ItemMoveEvent):Void {
 		var item:Item = cast e.target;
 		var tile:Tile = cast item.parent;
 		addItemsToTile([item], tile.tileX + e.distanceX, tile.tileY + e.distanceY);
@@ -103,6 +102,20 @@ class Board extends Sprite
 				removeChild(tile);
 			}
 		}
+	}
+	
+	public function emptyAllTiles():Void {
+		while (numChildren > 0) {
+			var tile:Tile = cast getChildAt(0);
+			removeItemsFromTile(tile.items, tile);
+		}
+	}
+	
+	public function isEmpty():Bool {
+		if (numChildren == 0) {
+			return true;
+		}
+		return false;
 	}
 	
 	//================================================================================

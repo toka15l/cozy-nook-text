@@ -6,7 +6,7 @@ class Tile extends Sprite
 {
 	public var tileX:Int = null;
 	public var tileY:Int = null;
-	private var items:Array<Item> = [];
+	public var items:Array<Item> = [];
 	private var currentItemIndex:Int = 0;
 
 	public function new() {
@@ -33,7 +33,7 @@ class Tile extends Sprite
 			cycleItems();			
 		}	
 		item.visible = true;
-		items.remove(item);		
+		items.remove(item);
 		removeChild(item);
 		if (items.length < 2) {
 			dispatchEvent(new TileEvent(TileEvent.DEREGISTER_CONTAINS_MULTIPLE_ITEMS));

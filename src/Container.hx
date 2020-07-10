@@ -13,7 +13,8 @@ class Container extends Item
 		contents.push(item);
 	}
 	
-	public override function itemSelect():Void {		
+	// TODO: add back item select feature
+	/*public override function itemSelect():Void {		
 		if (contents.length > 0) {
 			if (contents[0].count > 1) {
 				contents[0].count--;
@@ -21,7 +22,7 @@ class Container extends Item
 				dispatchEvent(new ContainerEvent(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, item));
 			}
 		}
-	}
+	}*/
 }
 
 class ContainerEvent extends Event {

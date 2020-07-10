@@ -1,16 +1,18 @@
 package;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
-import openfl.display.Shape;
 import openfl.display.Sprite;
 import openfl.events.Event;
 import openfl.geom.ColorTransform;
 import openfl.geom.Rectangle;
+import menu.Menu;
+import menu.MenuObject;
 
 class Item extends Sprite
 {
 	public var spriteCharCode:Int;
 	public var color:Int;
+	public var menuObjects:Array<MenuObject>;
 
 	public function new() {
 		super();
@@ -29,15 +31,17 @@ class Item extends Sprite
 	}
 	
 	public function move(distanceX:Int, distanceY:Int):Void {
-		dispatchEvent(new ItemEvent(ItemEvent.MOVE, distanceX, distanceY));
+		dispatchEvent(new ItemMoveEvent(ItemMoveEvent.MOVE, distanceX, distanceY));
 	}
 	
 	public function itemSelect():Void {
-		// exists to be overridden
+		if (menuObjects != null) {
+			dispatchEvent(new ItemSelectEvent(ItemSelectEvent.REQUEST_MENU_OBJECTS, menuObjects));
+		}
 	}
 }
 
-class ItemEvent extends Event {
+class ItemMoveEvent extends Event {
 	public static inline var MOVE = "move";
 	public var distanceX:Int;
 	public var distanceY:Int;
@@ -46,6 +50,17 @@ class ItemEvent extends Event {
     {
 		this.distanceX = distanceX;
 		this.distanceY = distanceY;
+        super(type, true, false);
+    }
+}
+
+class ItemSelectEvent extends Event {
+	public static inline var REQUEST_MENU_OBJECTS = "requestMenuObjects";
+	public var menuObjects:Array<MenuObject> = null;
+	
+	public function new(type:String, menuObjects:Array<MenuObject>)
+    {
+		this.menuObjects = menuObjects;
         super(type, true, false);
     }
 }
