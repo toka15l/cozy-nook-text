@@ -138,8 +138,12 @@ class Board extends Sprite
     // TILE SELECT
     //================================================================================
 	public function tileSelect():Void {
-		var tile:Tile = cast cursor.parent;
-		tile.tileSelect();
+		if (carriedItems.length > 0) {
+			carriedItems = [];
+		} else {
+			var tile:Tile = cast cursor.parent;
+			tile.tileSelect();
+		}
 	}
 	
 	//================================================================================
