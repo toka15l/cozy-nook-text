@@ -29,7 +29,7 @@ class Board extends Sprite
 		addEventListener(ItemMoveEvent.MOVE, itemMove);
 		addEventListener(TileEvent.REGISTER_CONTAINS_MULTIPLE_ITEMS, registerContainsMultipleItems);
 		addEventListener(TileEvent.DEREGISTER_CONTAINS_MULTIPLE_ITEMS, deregisterContainsMultipleItems);
-		//addEventListener(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, removeItemFromContainer);
+		addEventListener(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, removeItemFromContainer);
 		addEventListener(ItemEvent.PICKUP, pickUpItem);
 		
 		// multiple item cycle interval
@@ -72,20 +72,13 @@ class Board extends Sprite
 	
 	//================================================================================
     // ITEM PICKUP
-    //================================================================================
-	// TODO: add item pickup from containter
-	/*private function pickUpItem(e:ContainerEvent):Void {
+    //================================================================================	
+	private function removeItemFromContainer(e:ContainerEvent):Void {
 		var item:Item = cast e.target;
 		var tile:Tile = cast item.parent;
 		addItemsToTile([e.item], tile.tileX, tile.tileY);
-	}*/
-	
-	/*private function removeItemFromContainer(e:ContainerEvent):Void {
-		var item:Item = cast e.target;
-		var tile:Tile = cast item.parent;
-		addItemsToTile([e.item], tile.tileX, tile.tileY);
-		carriedItems.push(item);
-	}*/
+		carriedItems.push(e.item);
+	}
 	
 	private function pickUpItem(e:ItemEvent):Void {
 		carriedItems.push(e.target);
