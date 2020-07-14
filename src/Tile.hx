@@ -29,14 +29,30 @@ class Tile extends Sprite
 	}
 	
 	public function removeItem(item:Item):Void {
+		// removing the item that is before the current item index requires adjustment
+		var shouldAdjustCurrentItemIndex:Bool = false;
+		for (i in 0...items.length) {
+			if (items[i] == item) {
+				if (i < currentItemIndex) {
+					shouldAdjustCurrentItemIndex = true;
+				}
+				break;
+			}
+		}
+		// cycle items if removal item is currently displayed
 		if (items[currentItemIndex] == item) {
 			cycleItems();			
-		}	
+		}
+		// remove item
 		item.visible = true;
 		items.remove(item);
 		removeChild(item);
 		if (items.length < 2) {
 			dispatchEvent(new TileEvent(TileEvent.DEREGISTER_CONTAINS_MULTIPLE_ITEMS));
+		}		
+		// adjust current item index
+		if (shouldAdjustCurrentItemIndex == true) {
+			currentItemIndex--;
 		}
 	}
 	
