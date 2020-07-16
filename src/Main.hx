@@ -5,6 +5,7 @@ import openfl.display.Stage;
 import openfl.display.StageDisplayState;
 import openfl.events.KeyboardEvent;
 import openfl.system.System;
+import openfl.ui.Mouse;
 import menu.Menu;
 
 class Main extends Sprite 
@@ -20,8 +21,8 @@ class Main extends Sprite
 	public function new() {
 		super();
 		
-		// fullscreen
-		var stage:Stage = stage;
+		// hide mouse
+		Mouse.hide();
 		
 		// event listeners
 		stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
