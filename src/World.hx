@@ -39,7 +39,10 @@ class World extends Board
 		addItemsToTile([testBarrel], 4, 4);
 		
 		// test pickle
-		addItemsToTile([new Pickle()], 4, 4);
+		addItemsToTile([new Pickle()], 6, 4);
+		
+		// test butcher block
+		addItemsToTile([new ButcherBlock()], 4, 3);
 	}
 	
 	//================================================================================

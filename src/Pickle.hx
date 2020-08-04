@@ -1,5 +1,5 @@
 package;
-import menu.MenuObject;
+import menu.Action;
 
 class Pickle extends Item
 {	
@@ -7,10 +7,15 @@ class Pickle extends Item
 		spriteCharCode = 41;
 		color = 0x98FB98;
 		
-		menuObjects = [];
-		var eatPickle:MenuObject = new MenuObject();
-		eatPickle.string = "Eat Pickle";
-		menuObjects.push(eatPickle);
+		actions = [];
+		var actionPickUp:Action = new Action();
+		actionPickUp.string = "Pick Up";
+		actionPickUp.action = pickUp;
+		actions.push(actionPickUp);
+		
+		var actionEatPickle:Action = new Action();
+		actionEatPickle.string = "Eat Pickle";
+		actions.push(actionEatPickle);
 		
 		super();
 	}

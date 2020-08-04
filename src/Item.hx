@@ -6,13 +6,13 @@ import openfl.events.Event;
 import openfl.geom.ColorTransform;
 import openfl.geom.Rectangle;
 import menu.Menu;
-import menu.MenuObject;
+import menu.Action;
 
 class Item extends Sprite
 {
 	public var spriteCharCode:Int;
 	public var color:Int;
-	public var menuObjects:Array<MenuObject>;
+	public var actions:Array<Action>;
 
 	public function new() {
 		super();
@@ -35,9 +35,13 @@ class Item extends Sprite
 	}
 	
 	public function itemSelect():Void {
-		if (menuObjects != null) {
-			dispatchEvent(new ItemSelectEvent(ItemSelectEvent.REQUEST_MENU_OBJECTS, menuObjects));
+		if (actions != null) {
+			dispatchEvent(new ItemSelectEvent(ItemSelectEvent.REQUEST_ACTIONS, actions));
 		}
+	}
+	
+	public function pickUp():Void {
+		dispatchEvent(new ItemEvent(ItemEvent.PICKUP));
 	}
 }
 
@@ -55,12 +59,21 @@ class ItemMoveEvent extends Event {
 }
 
 class ItemSelectEvent extends Event {
-	public static inline var REQUEST_MENU_OBJECTS = "requestMenuObjects";
-	public var menuObjects:Array<MenuObject> = null;
+	public static inline var REQUEST_ACTIONS = "requestActions";
+	public var actions:Array<Action> = null;
 	
-	public function new(type:String, menuObjects:Array<MenuObject>)
+	public function new(type:String, actions:Array<Action>)
     {
-		this.menuObjects = menuObjects;
+		this.actions = actions;
+        super(type, true, false);
+    }
+}
+
+class ItemEvent extends Event {
+	public static inline var PICKUP = "pickUp";
+	
+	public function new(type:String)
+    {
         super(type, true, false);
     }
 }

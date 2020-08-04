@@ -5,6 +5,7 @@ import openfl.display.Stage;
 import openfl.display.StageDisplayState;
 import openfl.events.KeyboardEvent;
 import openfl.system.System;
+import openfl.ui.Mouse;
 import menu.Menu;
 
 class Main extends Sprite 
@@ -20,12 +21,12 @@ class Main extends Sprite
 	public function new() {
 		super();
 		
-		// fullscreen
-		var stage:Stage = stage;
+		// hide mouse
+		Mouse.hide();
 		
 		// event listeners
 		stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
-		addEventListener(Item.ItemSelectEvent.REQUEST_MENU_OBJECTS, requestMenuObjects);
+		addEventListener(Item.ItemSelectEvent.REQUEST_ACTIONS, requestActions);
 		
 		// load sprite bitmap data
 		spriteBitmapData = new SpriteBitmapData();
@@ -42,10 +43,10 @@ class Main extends Sprite
 	private function keyUp(e:KeyboardEvent):Void {
 		switch (e.keyCode) {
 			case 13: // enter
-				menu.isEmpty() == false ? null : executeMode();
+				menu.isEmpty() == false ? menu.executeSelectedAction() : executeMode();
 			case 27: // esc
 				if (menu.isEmpty() == false) {
-					menu.exitWithoutSelection();
+					menu.exitMenu();
 				} else {
 					stage.displayState == StageDisplayState.FULL_SCREEN ? exitFullscreen() : exit();
 				}
@@ -96,8 +97,8 @@ class Main extends Sprite
 		}
 	}
 	
-	private function requestMenuObjects(e:Item.ItemSelectEvent):Void {
-		menu.addMultipleMenuObjects(e.menuObjects, 1);
+	private function requestActions(e:Item.ItemSelectEvent):Void {
+		menu.addMultipleActions(e.actions, 1);
 	}
 	
 	private function enterFullscreen():Void {
