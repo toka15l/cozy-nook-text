@@ -10,11 +10,13 @@ class Board extends Sprite
 {
 	private static inline var ZOOM_FACTOR:Int = 1;
 	private static inline var INITIAL_SCALE:Int = 3;
-	private static inline var ITEM_CYCLE_INTERVAL:Int = 800; // NOTE ON CRASH BUG: when set to 10, crash does not occur
+	private static inline var ITEM_CYCLE_INTERVAL:Int = 800;
 	public var spriteBitmapData:SpriteBitmapData;
-	private var cursor:Plus = null;
+	private var cursor:Sprite = null;
 	private var tilesContainingMultipleItems:Array<Tile> = [];
 	private var carriedItems:Array<Item> = [];
+	private var cursorX:Int = 0;
+	private var cursorY:Int = 0;
 	
 	public function new(spriteBitmapData:SpriteBitmapData, initialScale:Int = null) {
 		super();
@@ -33,7 +35,7 @@ class Board extends Sprite
 		addEventListener(ItemEvent.PICKUP, pickUpItem);
 		
 		// multiple item cycle interval
-		setInterval(cycleItems, ITEM_CYCLE_INTERVAL);	
+		setInterval(cycleItems, ITEM_CYCLE_INTERVAL);
 	}
 	
 	//================================================================================
@@ -58,13 +60,14 @@ class Board extends Sprite
     //================================================================================
 	private function itemMove(e:ItemMoveEvent):Void {
 		var item:Item = cast e.target;
-		var tile:Tile = cast item.parent;
+		var tile:Tile = cast item.parent;		
 		addItemsToTile([item], tile.tileX + e.distanceX, tile.tileY + e.distanceY);
 		removeItemsFromTile([item], tile);
 	}
 	
 	public function move(distanceX:Int, distanceY:Int):Void {
-		cursor.move(distanceX, distanceY);
+		cursorX += distanceX;
+		cursorY += distanceY;
 		for (item in carriedItems) {
 			item.move(distanceX, distanceY);
 		}
@@ -134,8 +137,10 @@ class Board extends Sprite
 		if (carriedItems.length > 0) {
 			carriedItems = [];
 		} else {
-			var tile:Tile = cast cursor.parent;
-			tile.tileSelect();
+			var tile:Tile = cast getChildByName("tile_" + cursorX + "_" + cursorY);
+			if (tile != null) {
+				tile.tileSelect();
+			}
 		}
 	}
 	

@@ -30,7 +30,6 @@ class Tile extends Sprite
 	
 	public function removeItem(item:Item):Void {
 		if (items.length - 1 < 2) {
-			//trace("deregister");
 			dispatchEvent(new TileEvent(TileEvent.DEREGISTER_CONTAINS_MULTIPLE_ITEMS));
 		}
 		// removing the item that is before the current item index requires adjustment
@@ -62,8 +61,6 @@ class Tile extends Sprite
     // MULTIPLE ITEM CYCLING
     //================================================================================	
 	public function cycleItems(caller:String):Void {
-		trace(tileX + ", " + tileY + " - " + currentItemIndex + ", " + items.length + " - " + caller);
-		//trace(currentItemIndex + ", " + items.length); // GAME CRASHES BECAUSE currentItemIndex IS EQUAL TO items.length WHICH IS OUT OF BOUNDS
 		items[currentItemIndex].visible = false;
 		currentItemIndex++;
 		if (currentItemIndex >= items.length) {
