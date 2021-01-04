@@ -44,7 +44,7 @@ class Tile extends Sprite
 		}
 		// cycle items if removal item is currently displayed
 		if (items[currentItemIndex] == item) {
-			cycleItems("tile");			
+			cycleItems();			
 		}
 		// remove item
 		item.visible = true;
@@ -60,7 +60,7 @@ class Tile extends Sprite
 	//================================================================================
     // MULTIPLE ITEM CYCLING
     //================================================================================	
-	public function cycleItems(caller:String):Void {
+	public function cycleItems():Void {
 		items[currentItemIndex].visible = false;
 		currentItemIndex++;
 		if (currentItemIndex >= items.length) {

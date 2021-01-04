@@ -51,7 +51,7 @@ class Board extends Sprite
 	
 	private function cycleItems():Void {
 		for (tile in tilesContainingMultipleItems) {
-			tile.cycleItems("board");
+			tile.cycleItems();
 		}
 	}
 	
