@@ -20,15 +20,18 @@ class Tile extends Sprite
 		items.push(item);
 		addChild(item);
 		if (items.length > 1) {
+			items[currentItemIndex].visible = false;
+			currentItemIndex = items.length - 1;
 			if (items.length == 2) {
 				dispatchEvent(new TileEvent(TileEvent.REGISTER_CONTAINS_MULTIPLE_ITEMS));
 			}
-			items[currentItemIndex].visible = false;
-			currentItemIndex = items.length - 1;
 		}
 	}
 	
 	public function removeItem(item:Item):Void {
+		if (items.length - 1 < 2) {
+			dispatchEvent(new TileEvent(TileEvent.DEREGISTER_CONTAINS_MULTIPLE_ITEMS));
+		}
 		// removing the item that is before the current item index requires adjustment
 		var shouldAdjustCurrentItemIndex:Bool = false;
 		for (i in 0...items.length) {
@@ -47,9 +50,7 @@ class Tile extends Sprite
 		item.visible = true;
 		items.remove(item);
 		removeChild(item);
-		if (items.length < 2) {
-			dispatchEvent(new TileEvent(TileEvent.DEREGISTER_CONTAINS_MULTIPLE_ITEMS));
-		}		
+		
 		// adjust current item index
 		if (shouldAdjustCurrentItemIndex == true) {
 			currentItemIndex--;

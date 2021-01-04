@@ -1,9 +1,11 @@
 package;
+import openfl.display.Bitmap;
+import openfl.display.Sprite;
 
 class World extends Board
 {
 	private var building:Building = null;
-	private var selectionStartTile:Tile = null;
+	private var multipleSelect:Bool = false;
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
 		super(spriteBitmapData);
@@ -11,9 +13,10 @@ class World extends Board
 		// test dwarf
 		addItemsToTile([new Dwarf()], 1, 2);
 		
-		// test cursor
-		cursor = new Plus();
-		addItemsToTile([cursor], 5, 5);
+		// cursor
+		cursor = new Sprite();
+		cursor.addChild(new Bitmap(spriteBitmapData.getBitmapDataForCharCode(219)));
+		addChild(cursor);
 		
 		// test existing building
 		var existingBuilding:Building = new Building(2, 2, 5, 5);
@@ -49,14 +52,14 @@ class World extends Board
     // MULTIPLE TILE OBJECTS
     //================================================================================	
 	public function multipleTileSelect():Void {
-		if (selectionStartTile == null) {
-			selectionStartTile = cast cursor.parent;
-			building = new Building(selectionStartTile.tileX, selectionStartTile.tileY);
+		if (multipleSelect == false) {
+			multipleSelect = true;
+			building = new Building(cursorX, cursorY);
 			for (item in building.items) {
 				addItemsToTile([item[0]], item[1], item[2]);
 			}
 		} else {
-			selectionStartTile = null;
+			multipleSelect = false;
 		}
 	}
 	
@@ -65,14 +68,15 @@ class World extends Board
     //================================================================================	
 	public override function move(distanceX:Int, distanceY:Int):Void {
 		super.move(distanceX, distanceY);
-		if (selectionStartTile != null) {
-			var tile:Tile = cast cursor.parent;
+		cursor.x = cursorX * SpriteBitmapData.SPRITE_WIDTH;
+		cursor.y = cursorY * SpriteBitmapData.SPRITE_HEIGHT;
+		if (multipleSelect == true) {
 			for (item in building.items) {
 				var itemOject:Item = cast item[0];
 				var itemTile:Tile = cast itemOject.parent;
 				removeItemsFromTile([itemOject], itemTile);
 			}
-			building.changeEnd(tile.tileX, tile.tileY);
+			building.changeEnd(cursorX, cursorY);
 			for (item in building.items) {
 				addItemsToTile([item[0]], item[1], item[2]);
 			}
