@@ -20,15 +20,19 @@ class Tile extends Sprite
 		items.push(item);
 		addChild(item);
 		if (items.length > 1) {
+			items[currentItemIndex].visible = false;
+			currentItemIndex = items.length - 1;
 			if (items.length == 2) {
 				dispatchEvent(new TileEvent(TileEvent.REGISTER_CONTAINS_MULTIPLE_ITEMS));
 			}
-			items[currentItemIndex].visible = false;
-			currentItemIndex = items.length - 1;
 		}
 	}
 	
 	public function removeItem(item:Item):Void {
+		if (items.length - 1 < 2) {
+			//trace("deregister");
+			dispatchEvent(new TileEvent(TileEvent.DEREGISTER_CONTAINS_MULTIPLE_ITEMS));
+		}
 		// removing the item that is before the current item index requires adjustment
 		var shouldAdjustCurrentItemIndex:Bool = false;
 		for (i in 0...items.length) {
@@ -41,15 +45,13 @@ class Tile extends Sprite
 		}
 		// cycle items if removal item is currently displayed
 		if (items[currentItemIndex] == item) {
-			cycleItems();			
+			cycleItems("tile");			
 		}
 		// remove item
 		item.visible = true;
 		items.remove(item);
 		removeChild(item);
-		if (items.length < 2) {
-			dispatchEvent(new TileEvent(TileEvent.DEREGISTER_CONTAINS_MULTIPLE_ITEMS));
-		}		
+		
 		// adjust current item index
 		if (shouldAdjustCurrentItemIndex == true) {
 			currentItemIndex--;
@@ -59,7 +61,9 @@ class Tile extends Sprite
 	//================================================================================
     // MULTIPLE ITEM CYCLING
     //================================================================================	
-	public function cycleItems():Void {
+	public function cycleItems(caller:String):Void {
+		trace(tileX + ", " + tileY + " - " + currentItemIndex + ", " + items.length + " - " + caller);
+		//trace(currentItemIndex + ", " + items.length); // GAME CRASHES BECAUSE currentItemIndex IS EQUAL TO items.length WHICH IS OUT OF BOUNDS
 		items[currentItemIndex].visible = false;
 		currentItemIndex++;
 		if (currentItemIndex >= items.length) {

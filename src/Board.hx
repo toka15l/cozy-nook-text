@@ -10,7 +10,7 @@ class Board extends Sprite
 {
 	private static inline var ZOOM_FACTOR:Int = 1;
 	private static inline var INITIAL_SCALE:Int = 3;
-	private static inline var ITEM_CYCLE_INTERVAL:Int = 800;
+	private static inline var ITEM_CYCLE_INTERVAL:Int = 800; // NOTE ON CRASH BUG: when set to 10, crash does not occur
 	public var spriteBitmapData:SpriteBitmapData;
 	private var cursor:Plus = null;
 	private var tilesContainingMultipleItems:Array<Tile> = [];
@@ -49,7 +49,7 @@ class Board extends Sprite
 	
 	private function cycleItems():Void {
 		for (tile in tilesContainingMultipleItems) {
-			tile.cycleItems();
+			tile.cycleItems("board");
 		}
 	}
 	
