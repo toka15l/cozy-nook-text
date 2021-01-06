@@ -16,6 +16,13 @@ class Item extends Sprite
 
 	public function new() {
 		super();
+		
+		actions = [];
+		
+		var actionPickUp:Action = new Action();
+		actionPickUp.string = "Pick Up";
+		actionPickUp.action = pickUp;
+		actions.push(actionPickUp);
 	}
 	
 	public function setBitmapData(bitmapData:BitmapData) {

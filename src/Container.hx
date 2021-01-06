@@ -7,13 +7,12 @@ class Container extends Item
 	public var contents:Array<ContainerObject> = [];
 	
 	public function new() {
-		actions = [];
+		super();
+		
 		var actionRemoveItem:Action = new Action();
 		actionRemoveItem.string = "Remove Item";
 		actionRemoveItem.action = this.removeItem;
 		actions.push(actionRemoveItem);
-		
-		super();
 	}
 	
 	public function addItem(item:ContainerObject):Void {
