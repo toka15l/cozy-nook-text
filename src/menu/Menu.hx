@@ -1,4 +1,41 @@
 package menu;
+import openfl.display.Sprite;
+import openfl.display.Bitmap;
+
+/*class Menu extends Sprite
+{
+	public var spriteBitmapData:SpriteBitmapData;
+	public var active:Bool = false;
+	
+	public function new(spriteBitmapData:SpriteBitmapData) {
+		super();
+		
+		this.spriteBitmapData = spriteBitmapData;
+	}
+	
+	public function addMultipleActions(actions:Array<Action>, spriteCharCode:Int, color:Int, tileX:Int, tileY:Int):Void {
+		trace(tileX, tileY);
+		if (active == false) {
+			active = true;
+			//item.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(item.spriteCharCode));
+		}
+		
+		
+	}
+	
+	public function navigate(x:Int, y:Int):Void {
+		//
+	}
+	
+	public function executeSelectedAction():Void {
+		//
+	}
+	
+	public function exitMenu():Void {
+		//
+	}
+}*/
+
 
 class Menu extends Board
 {
@@ -12,39 +49,69 @@ class Menu extends Board
 		super(spriteBitmapData, 1);
 	}
 	
-	public function addMultipleActions(actions:Array<Action>, startX:Int):Void {
+	public function addMultipleItemSelect(items:Array<WorldItem>, tileX:Int, tileY:Int):Void {
+		trace("multiple select: " + tileX + ", " + tileY);
+	}
+	
+	public function addMultipleActions(actions:Array<Action>, spriteCharCode:Int, color:Int, tileX:Int, tileY:Int):Void {
+		
+		
+		trace("multiple actions: " + tileX + ", " + tileY);
+		
+		
+		
+		/*addItemsToTile([new Item(207)], 6, 5);
+		addItemsToTile([new Item(201)], 5, 5);
+		addItemsToTile([new Item(187)], 7, 5);
+		addItemsToTile([new Item(186)], 5, 6);
+		addItemsToTile([new Item(186)], 7, 6);
+		addItemsToTile([new Item(200)], 5, 7);
+		addItemsToTile([new Item(188)], 7, 7);
+		addItemsToTile([new Item(205)], 6, 7);*/
+		
+		
+		
+		/*trace(tileX + ", " + tileY);
+		var test:Sprite = new Sprite();
+		test.addChild(new Bitmap(spriteBitmapData.getBitmapDataForCharCode(219)));
+		addChild(test);
+		test.x = tileX * SpriteBitmapData.SPRITE_WIDTH;
+		test.y = tileY * SpriteBitmapData.SPRITE_HEIGHT;*/
+		
+		
+		
+		
+		
+		
+		
 		// insert space between menu object sections
-		if (currentY != 0) {
+		/*if (currentY != 0) {
 			currentY += 2;
-		}		
+		}
 		var preselected:Bool = false;
 		for (i in 0...actions.length) {
 			if (actions[i].selected == true) {
 				preselected = true;
 			}
-			addAction(actions[i], startX, currentY);
+			addAction(actions[i], 0, currentY);
 			currentY += 2;
 			allActions.push(actions[i]);
 		}
 		if (preselected == false) {
 			selectAction(allActions[0]);
-		}
+		}*/
 	}
 	
 	private function addAction(action:Action, x:Int, y:Int):Void {
-		for (i in 0...action.string.length) {
-			var item:Item = new Item();
-			if (action.selected == false) {
-				item.color = DESELECTED_COLOR;
-			}
-			item.spriteCharCode = action.string.charCodeAt(i);
-			addItemsToTile([item], x + i, y);
-			action.menuItems.push(item);
-		}
+		/*for (i in 0...action.string.length) {
+			var letter:Item = new Item(action.string.charCodeAt(i), action.selected ? null : DESELECTED_COLOR);
+			addItemToTile(letter, x + i, y);
+			action.menuItems.push(letter);
+		}*/
 	}
 	
 	public function nextSelection():Void {
-		for (i in 0...allActions.length) {
+		/*for (i in 0...allActions.length) {
 			if (allActions[i].selected == true) {
 				selectAction(allActions[i], false);
 				if (i + 1 >= allActions.length) {
@@ -54,11 +121,11 @@ class Menu extends Board
 				}
 				break;
 			}
-		}
+		}*/
 	}
 	
 	public function previousSelection():Void {
-		for (i in 0...allActions.length) {
+		/*for (i in 0...allActions.length) {
 			if (allActions[i].selected == true) {
 				selectAction(allActions[i], false);
 				if (i - 1 < 0) {
@@ -68,11 +135,11 @@ class Menu extends Board
 				}
 				break;
 			}
-		}
+		}*/
 	}
 	
 	private function selectAction(action:Action, select:Bool = true):Void {
-		var startX:Int = -1;
+		/*var startX:Int = -1;
 		var startY:Int = -1;
 		for (item in action.menuItems) {
 			var tile:Tile = cast item.parent;
@@ -87,23 +154,23 @@ class Menu extends Board
 		action.selected = select;
 		action.menuItems = [];
 		addAction(action, startX, startY);
-		currentAction = action;
+		currentAction = action;*/
 	}
 	
 	public function exitMenu():Void {
-		for (action in allActions) {
+		/*for (action in allActions) {
 			action.selected = false;
 			action.menuItems = [];
 		}
 		emptyAllTiles();
 		allActions = [];
-		currentY = 0;
+		currentY = 0;*/
 	}
 	
 	public function executeSelectedAction():Void {
-		if (currentAction.action != null) {
+		/*if (currentAction.action != null) {
 			currentAction.action();
 			exitMenu();
-		}
+		}*/
 	}
 }

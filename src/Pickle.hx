@@ -1,13 +1,10 @@
 package;
 import menu.Action;
 
-class Pickle extends Item
+class Pickle extends WorldItem
 {	
 	public function new() {
-		spriteCharCode = 41;
-		color = 0x98FB98;
-		
-		super();
+		super(41, 0x98FB98);
 		
 		var actionEatPickle:Action = new Action();
 		actionEatPickle.string = "Eat Pickle";
