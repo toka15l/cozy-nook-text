@@ -45,12 +45,20 @@ class Menu extends Board
 	private var currentAction:Action = null;
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
-		this.spriteBitmapData = spriteBitmapData;
-		super(spriteBitmapData, 1);
+		super(spriteBitmapData);
 	}
 	
 	public function addMultipleItemSelect(items:Array<WorldItem>, tileX:Int, tileY:Int):Void {
 		trace("multiple select: " + tileX + ", " + tileY);
+		var currentX:Int = tileX;
+		for (item in items) {
+			var menuSelectItem:MenuSelectItem = new MenuSelectItem(item.spriteCharCode, item.color);
+			menuSelectItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuSelectItem.spriteCharCode));
+			menuSelectItem.x = currentX * SpriteBitmapData.SPRITE_WIDTH;
+			menuSelectItem.y = (tileY + 1) * SpriteBitmapData.SPRITE_HEIGHT;
+			addChild(menuSelectItem);
+			currentX++;
+		}
 	}
 	
 	public function addMultipleActions(actions:Array<Action>, spriteCharCode:Int, color:Int, tileX:Int, tileY:Int):Void {

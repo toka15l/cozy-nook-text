@@ -11,11 +11,11 @@ class Board extends Sprite
 	private var cursorX:Int = 0;
 	private var cursorY:Int = 0;
 	
-	public function new(spriteBitmapData:SpriteBitmapData, initialScale:Int = null) {
+	public function new(spriteBitmapData:SpriteBitmapData) {
 		super();
 		
 		// set initial scale (zoom)
-		scaleX = scaleY = initialScale != null ? initialScale : INITIAL_SCALE;
+		scaleX = scaleY = INITIAL_SCALE;
 		
 		// initialize sprite bitmap data
 		this.spriteBitmapData = spriteBitmapData;
