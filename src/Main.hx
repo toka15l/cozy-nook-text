@@ -46,33 +46,33 @@ class Main extends Sprite
 	private function keyUp(e:KeyboardEvent):Void {
 		switch (e.keyCode) {
 			case 13: // enter
-				menu.isEmpty() == false ? menu.executeSelectedAction() : executeMode();
+				menu.active == true ? menu.executeSelectedAction() : executeMode();
 			case 27: // esc
-				if (menu.isEmpty() == false) {
+				if (menu.active == true) {
 					menu.exitMenu();
 				} else {
 					stage.displayState == StageDisplayState.FULL_SCREEN ? exitFullscreen() : exit();
 				}
 			case 37: // left
-				if (menu.isEmpty() == false) {
+				if (menu.active == true) {
 					menu.previousSelection();
 				} else {
 					world.move((e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1) * -1, 0);
 				}
 			case 38: // up
-				if (menu.isEmpty() == false) {
+				if (menu.active == true) {
 					menu.previousSelection();
 				} else {
 					world.move(0, (e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1) * -1);
 				}
 			case 40: // down
-				if (menu.isEmpty() == false) {
+				if (menu.active == true) {
 					menu.nextSelection();
 				} else {
 					world.move(0, (e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1));
 				}				
 			case 39: // right
-				if (menu.isEmpty() == false) {
+				if (menu.active == true) {
 					menu.nextSelection();
 				} else {
 					world.move((e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1), 0);
@@ -84,9 +84,15 @@ class Main extends Sprite
 			case 75: // k
 				currentMode = MODE_SINGLE_TILE_SELECT;
 			case 187: // +=
-				e.shiftKey == true ? world.zoomIn() : null;
+				if (e.shiftKey == true) {
+					world.zoomIn();
+					menu.zoomIn();
+				}
 			case 189: // -_
-				e.shiftKey == true ? world.zoomOut() : null;
+				if (e.shiftKey == true) {
+					world.zoomOut();
+					menu.zoomOut();
+				}
 			default:
 		}
 	}

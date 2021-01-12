@@ -21,13 +21,6 @@ class Board extends Sprite
 		this.spriteBitmapData = spriteBitmapData;
 	}
 	
-	public function isEmpty():Bool {
-		if (numChildren == 0) {
-			return true;
-		}
-		return false;
-	}
-	
 	//================================================================================
     // ZOOM
     //================================================================================

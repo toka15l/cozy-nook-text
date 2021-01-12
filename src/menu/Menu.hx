@@ -3,12 +3,15 @@ import openfl.display.Sprite;
 import openfl.display.Bitmap;
 
 class Menu extends Board
-{	
+{
+	public var active:Bool = false;
+	
 	public function new(spriteBitmapData:SpriteBitmapData) {
 		super(spriteBitmapData);
 	}
 	
 	public function addMultipleItemSelect(items:Array<WorldItem>, tileX:Int, tileY:Int):Void {
+		active = true;
 		var menuSelectItems:Array<MenuSelectItem> = [];
 		for (item in items) {
 			var menuSelectItem:MenuSelectItem = new MenuSelectItem(item.spriteCharCode, item.color);
@@ -56,7 +59,8 @@ class Menu extends Board
 	}
 	
 	public function exitMenu():Void {
-		//
+		active = false;
+		removeChildren();
 	}
 	
 	public function executeSelectedAction():Void {
