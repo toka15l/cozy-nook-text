@@ -13,6 +13,10 @@ class World extends Board
 	private var building:Building = null;
 	private var multipleSelect:Bool = false;
 	private var tilesContainingMultipleItems:Array<WorldTile> = [];
+	private var cursor:Sprite = null;
+	private var carriedItems:Array<WorldItem> = [];
+	private var cursorX:Int = 0;
+	private var cursorY:Int = 0;
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
 		super(spriteBitmapData);
@@ -178,5 +182,12 @@ class World extends Board
 				removeItemFromTile(item, tile);
 			}
 		}
+	}
+	
+	//================================================================================
+    // CURSOR
+    //================================================================================
+	public function showCursor(show:Bool):Void {
+		cursor.visible = show;
 	}
 }

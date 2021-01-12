@@ -50,6 +50,7 @@ class Main extends Sprite
 			case 27: // esc
 				if (menu.active == true) {
 					menu.exitMenu();
+					world.showCursor(true);
 				} else {
 					stage.displayState == StageDisplayState.FULL_SCREEN ? exitFullscreen() : exit();
 				}
@@ -107,6 +108,7 @@ class Main extends Sprite
 	}
 	
 	private function multipleItemSelect(e:TileEvent):Void {
+		world.showCursor(false);
 		var tile:WorldTile = cast e.target;
 		menu.addMultipleItemSelect(e.items, tile.tileX, tile.tileY);
 	}

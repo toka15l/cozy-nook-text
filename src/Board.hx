@@ -6,10 +6,6 @@ class Board extends Sprite
 	private static inline var ZOOM_FACTOR:Int = 1;
 	private static inline var INITIAL_SCALE:Int = 3;
 	public var spriteBitmapData:SpriteBitmapData;
-	private var cursor:Sprite = null;
-	private var carriedItems:Array<WorldItem> = [];
-	private var cursorX:Int = 0;
-	private var cursorY:Int = 0;
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
 		super();
