@@ -6,8 +6,8 @@ import openfl.events.Event;
 class Menu extends Board
 {
 	public var active:Bool = false;
-	public var menuSelectItems:Array<MenuSelectItem>;
-	public var menuActionItems:Array<MenuActionItem>;
+	public var menuSelectItems:Array<MenuSelectItem> = [];
+	public var menuActionItems:Array<MenuActionItem> = [];
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
 		super(spriteBitmapData);
@@ -61,28 +61,18 @@ class Menu extends Board
 	}
 	
 	public function nextSelection():Void {
-		next(menuSelectItems.length > 0 ? cast menuSelectItems : cast menuActionItems);
+		navigate(menuSelectItems.length > 0 ? cast menuSelectItems : cast menuActionItems, 1);
 	}
 	
 	public function previousSelection():Void {
-		previous(menuSelectItems.length > 0 ? cast menuSelectItems : cast menuActionItems);
+		navigate(menuSelectItems.length > 0 ? cast menuSelectItems : cast menuActionItems, -1);
 	}
 	
-	private function next(menuInteractiveItems:Array<MenuInteractiveItem>):Void {
+	private function navigate(menuInteractiveItems:Array<MenuInteractiveItem>, direction:Int):Void {
 		for (i in 0...menuInteractiveItems.length) {
 			if (menuInteractiveItems[i].selected == true) {
 				menuInteractiveItems[i].select(false);
-				menuInteractiveItems[i < menuInteractiveItems.length - 1 ? i + 1 : 0].select(true);
-				break;
-			}
-		}
-	}
-	
-	public function previous(menuInteractiveItems:Array<MenuInteractiveItem>):Void {
-		for (i in 0...menuInteractiveItems.length) {
-			if (menuInteractiveItems[i].selected == true) {
-				menuInteractiveItems[i].select(false);
-				menuInteractiveItems[i > 0 ? i - 1 : menuInteractiveItems.length - 1].select(true);
+				direction == 1 ? menuInteractiveItems[i < menuInteractiveItems.length - 1 ? i + 1 : 0].select(true) : menuInteractiveItems[i > 0 ? i - 1 : menuInteractiveItems.length - 1].select(true);
 				break;
 			}
 		}
@@ -91,6 +81,8 @@ class Menu extends Board
 	public function exitMenu():Void {
 		active = false;
 		removeChildren();
+		menuSelectItems = [];
+		menuActionItems = [];
 		dispatchEvent(new MenuEvent(MenuEvent.EXIT_MENU));
 	}
 	
@@ -101,7 +93,6 @@ class Menu extends Board
 				break;
 			}
 		}
-		menuSelectItems = [];
 		exitMenu();
 	}
 }
