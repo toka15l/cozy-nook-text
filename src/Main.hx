@@ -30,6 +30,7 @@ class Main extends Sprite
 		stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
 		addEventListener(TileEvent.MULTIPLE_ITEM_SELECT, multipleItemSelect);
 		addEventListener(ItemSelectEvent.REQUEST_ACTIONS, requestActions);
+		addEventListener(MenuEvent.EXIT_MENU, exitMenu);
 		
 		// load sprite bitmap data
 		spriteBitmapData = new SpriteBitmapData();
@@ -50,7 +51,6 @@ class Main extends Sprite
 			case 27: // esc
 				if (menu.active == true) {
 					menu.exitMenu();
-					world.showCursor(true);
 				} else {
 					stage.displayState == StageDisplayState.FULL_SCREEN ? exitFullscreen() : exit();
 				}
@@ -96,6 +96,10 @@ class Main extends Sprite
 				}
 			default:
 		}
+	}
+	
+	private function exitMenu(e:MenuEvent):Void {
+		world.showCursor(true);
 	}
 	
 	private function executeMode():Void {

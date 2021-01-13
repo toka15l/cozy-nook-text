@@ -5,9 +5,12 @@ class MenuSelectItem extends MenuItem
 {
 	public var selected:Bool = false;
 	private var highlight:Shape;
+	public var item:WorldItem;
 	
-	public function new(spriteCharCode:Int, color:Int = null) {
-		super(spriteCharCode, color);
+	public function new(item:WorldItem) {		
+		super(item.spriteCharCode, item.color);
+		
+		this.item = item;
 		
 		highlight = new Shape();
 		highlight.graphics.beginFill(0xFFFFFF);

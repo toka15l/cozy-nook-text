@@ -1,6 +1,7 @@
 package menu;
 import openfl.display.Sprite;
 import openfl.display.Bitmap;
+import openfl.events.Event;
 
 class Menu extends Board
 {
@@ -15,7 +16,7 @@ class Menu extends Board
 		active = true;
 		menuSelectItems = [];
 		for (item in items) {
-			var menuSelectItem:MenuSelectItem = new MenuSelectItem(item.spriteCharCode, item.color);
+			var menuSelectItem:MenuSelectItem = new MenuSelectItem(item);
 			menuSelectItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuSelectItem.spriteCharCode));
 			menuSelectItems.push(menuSelectItem);
 		}
@@ -75,9 +76,26 @@ class Menu extends Board
 	public function exitMenu():Void {
 		active = false;
 		removeChildren();
+		dispatchEvent(new MenuEvent(MenuEvent.EXIT_MENU));
 	}
 	
 	public function executeSelectedAction():Void {
-		//
+		for (menuSelectItem in menuSelectItems) {
+			if (menuSelectItem.selected == true) {
+				menuSelectItem.item.itemSelect();
+				break;
+			}
+		}
+		menuSelectItems = [];
+		exitMenu();
 	}
+}
+
+class MenuEvent extends Event {
+	public static inline var EXIT_MENU = "exitMenu";
+	
+	public function new(type:String)
+    {
+        super(type, true, false);
+    }
 }
