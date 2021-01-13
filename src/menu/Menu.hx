@@ -93,6 +93,12 @@ class Menu extends Board
 				break;
 			}
 		}
+		for (menuActionItem in menuActionItems) {
+			if (menuActionItem.selected == true) {
+				menuActionItem.action.action();
+				break;
+			}
+		}
 		exitMenu();
 	}
 }
