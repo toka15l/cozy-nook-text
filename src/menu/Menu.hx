@@ -27,6 +27,7 @@ class Menu extends Board
 		drawBorderPiece(200, tileX - 1, tileY + 3); // bottom left
 		for (i in 0...items.length) {
 			drawBorderPiece(i == 0 ? 207 : 205, tileX + i, tileY + 1); // arrow or top middle
+			items[i].select(i == 0);
 			items[i].x = (tileX + i) * SpriteBitmapData.SPRITE_WIDTH;
 			items[i].y = (tileY + 2) * SpriteBitmapData.SPRITE_HEIGHT;
 			addChild(items[i]);
