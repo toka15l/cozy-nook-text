@@ -105,6 +105,9 @@ class World extends Board
 				addItemToTile(item[0], item[1], item[2]);
 			}
 		}
+		for (item in carriedItems) {
+			item.move(distanceX, distanceY);
+		}
 	}
 	
 	//================================================================================

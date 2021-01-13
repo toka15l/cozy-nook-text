@@ -78,28 +78,36 @@ class Menu extends Board
 		}
 	}
 	
-	public function exitMenu():Void {
-		active = false;
+	private function clearMenu():Void {
 		removeChildren();
 		menuSelectItems = [];
 		menuActionItems = [];
+	}
+	
+	public function exitMenu():Void {
+		clearMenu();
+		active = false;		
 		dispatchEvent(new MenuEvent(MenuEvent.EXIT_MENU));
 	}
 	
-	public function executeSelectedAction():Void {
-		for (menuSelectItem in menuSelectItems) {
-			if (menuSelectItem.selected == true) {
-				menuSelectItem.item.itemSelect();
-				break;
+	public function executeSelected():Void {
+		if (menuSelectItems.length > 0) {
+			for (menuSelectItem in menuSelectItems) {
+				if (menuSelectItem.selected == true) {
+					clearMenu();
+					menuSelectItem.item.itemSelect();
+					break;
+				}
+			}
+		} else {
+			for (menuActionItem in menuActionItems) {
+				if (menuActionItem.selected == true) {
+					exitMenu();
+					menuActionItem.action.action();
+					break;
+				}
 			}
 		}
-		for (menuActionItem in menuActionItems) {
-			if (menuActionItem.selected == true) {
-				menuActionItem.action.action();
-				break;
-			}
-		}
-		exitMenu();
 	}
 }
 

@@ -47,7 +47,7 @@ class Main extends Sprite
 	private function keyUp(e:KeyboardEvent):Void {
 		switch (e.keyCode) {
 			case 13: // enter
-				menu.active == true ? menu.executeSelectedAction() : executeMode();
+				menu.active == true ? menu.executeSelected() : executeMode();
 			case 27: // esc
 				if (menu.active == true) {
 					menu.exitMenu();
