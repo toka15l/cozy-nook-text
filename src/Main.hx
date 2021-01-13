@@ -120,7 +120,7 @@ class Main extends Sprite
 	private function requestActions(e:ItemSelectEvent):Void {
 		var item:WorldItem = cast e.target;
 		var tile:WorldTile = cast item.parent;
-		menu.addMultipleActions(e.actions, item.spriteCharCode, item.color, tile.tileX, tile.tileY);
+		menu.addMultipleActions(item, tile.tileX, tile.tileY);
 	}
 	
 	private function enterFullscreen():Void {

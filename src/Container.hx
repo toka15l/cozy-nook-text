@@ -9,8 +9,11 @@ class Container extends WorldItem
 	public function new(spriteCharCode:Int, color:Int = null) {
 		super(spriteCharCode, color);
 		
-		var actionRemoveItem:Action = new Action();
+		/*var actionRemoveItem:Action = new Action();
 		actionRemoveItem.string = "Remove Item";
+		actionRemoveItem.action = this.removeItem;
+		actions.push(actionRemoveItem);*/
+		var actionRemoveItem:Action = new Action(24, 0x00FF00);
 		actionRemoveItem.action = this.removeItem;
 		actions.push(actionRemoveItem);
 	}

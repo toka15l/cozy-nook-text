@@ -1,27 +1,11 @@
 package;
-import openfl.display.Shape;
 
-class MenuSelectItem extends MenuItem
+class MenuSelectItem extends MenuInteractiveItem
 {
-	public var selected:Bool = false;
-	private var highlight:Shape;
 	public var item:WorldItem;
 	
-	public function new(item:WorldItem) {		
-		super(item.spriteCharCode, item.color);
-		
+	public function new(item:WorldItem) {
+		super(item.spriteCharCode, item.color);		
 		this.item = item;
-		
-		highlight = new Shape();
-		highlight.graphics.beginFill(0xFFFFFF);
-		highlight.graphics.drawRect(0, 0, SpriteBitmapData.SPRITE_WIDTH, SpriteBitmapData.SPRITE_HEIGHT);
-		highlight.graphics.endFill();
-		highlight.visible = false;
-		addChild(highlight); 
-	}
-	
-	public function select(select:Bool):Void {
-		selected = select;
-		highlight.visible = select;
 	}
 }

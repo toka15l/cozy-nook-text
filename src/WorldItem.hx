@@ -12,9 +12,12 @@ class WorldItem extends Item
 		
 		this.actions = [];
 		
-		var actionPickUp:Action = new Action();
+		/*var actionPickUp:Action = new Action();
 		actionPickUp.string = "Pick Up";
 		actionPickUp.action = this.pickUp; 
+		actions.push(actionPickUp);*/
+		var actionPickUp:Action = new Action(30, 0x00FF00);
+		actionPickUp.action = this.pickUp;
 		actions.push(actionPickUp);
 	}
 	

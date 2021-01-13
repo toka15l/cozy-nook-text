@@ -1,13 +1,10 @@
 package menu;
 
-class Action
+class Action extends Item
 {
-	public var string:String;
-	public var selected:Bool = false;
-	public var menuItems:Array<Item> = [];
 	public var action:Void->Void;
 	
-	public function new() {
-		//
+	public function new(spriteCharCode:Int, color:Int = null) {
+		super(spriteCharCode, color);
 	}
 }

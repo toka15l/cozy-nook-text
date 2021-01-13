@@ -7,23 +7,34 @@ class Menu extends Board
 {
 	public var active:Bool = false;
 	public var menuSelectItems:Array<MenuSelectItem>;
+	public var menuActionItems:Array<MenuActionItem>;
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
 		super(spriteBitmapData);
 	}
 	
 	public function addMultipleItemSelect(items:Array<WorldItem>, tileX:Int, tileY:Int):Void {
-		active = true;
 		menuSelectItems = [];
 		for (item in items) {
 			var menuSelectItem:MenuSelectItem = new MenuSelectItem(item);
 			menuSelectItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuSelectItem.spriteCharCode));
 			menuSelectItems.push(menuSelectItem);
 		}
-		drawMenu(menuSelectItems, tileX, tileY);
+		drawMenu(cast menuSelectItems, tileX, tileY);
 	}
 	
-	private function drawMenu(items:Array<MenuSelectItem>, tileX:Int, tileY:Int):Void {
+	public function addMultipleActions(item:WorldItem, tileX:Int, tileY:Int):Void {
+		menuActionItems = [];
+		for (action in item.actions) {
+			var menuActionItem:MenuActionItem = new MenuActionItem(action);
+			menuActionItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuActionItem.spriteCharCode));
+			menuActionItems.push(menuActionItem);
+		}
+		drawMenu(cast menuActionItems, tileX, tileY);
+	}
+	
+	private function drawMenu(items:Array<MenuInteractiveItem>, tileX:Int, tileY:Int):Void {
+		active = true;
 		drawBorderPiece(201, tileX - 1, tileY + 1); // top left
 		drawBorderPiece(186, tileX - 1, tileY + 2); // middle left
 		drawBorderPiece(200, tileX - 1, tileY + 3); // bottom left
@@ -49,25 +60,29 @@ class Menu extends Board
 		addChild(borderPiece);
 	}
 	
-	public function addMultipleActions(actions:Array<Action>, spriteCharCode:Int, color:Int, tileX:Int, tileY:Int):Void {
-		trace("multiple actions: " + tileX + ", " + tileY);
+	public function nextSelection():Void {
+		next(menuSelectItems.length > 0 ? cast menuSelectItems : cast menuActionItems);
 	}
 	
-	public function nextSelection():Void {
-		for (i in 0...menuSelectItems.length) {
-			if (menuSelectItems[i].selected == true) {
-				menuSelectItems[i].select(false);
-				menuSelectItems[i < menuSelectItems.length - 1 ? i + 1 : 0].select(true);
+	public function previousSelection():Void {
+		previous(menuSelectItems.length > 0 ? cast menuSelectItems : cast menuActionItems);
+	}
+	
+	private function next(menuInteractiveItems:Array<MenuInteractiveItem>):Void {
+		for (i in 0...menuInteractiveItems.length) {
+			if (menuInteractiveItems[i].selected == true) {
+				menuInteractiveItems[i].select(false);
+				menuInteractiveItems[i < menuInteractiveItems.length - 1 ? i + 1 : 0].select(true);
 				break;
 			}
 		}
 	}
 	
-	public function previousSelection():Void {
-		for (i in 0...menuSelectItems.length) {
-			if (menuSelectItems[i].selected == true) {
-				menuSelectItems[i].select(false);
-				menuSelectItems[i > 0 ? i - 1 : menuSelectItems.length - 1].select(true);
+	public function previous(menuInteractiveItems:Array<MenuInteractiveItem>):Void {
+		for (i in 0...menuInteractiveItems.length) {
+			if (menuInteractiveItems[i].selected == true) {
+				menuInteractiveItems[i].select(false);
+				menuInteractiveItems[i > 0 ? i - 1 : menuInteractiveItems.length - 1].select(true);
 				break;
 			}
 		}
