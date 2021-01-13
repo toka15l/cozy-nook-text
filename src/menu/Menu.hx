@@ -5,6 +5,7 @@ import openfl.display.Bitmap;
 class Menu extends Board
 {
 	public var active:Bool = false;
+	public var menuSelectItems:Array<MenuSelectItem>;
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
 		super(spriteBitmapData);
@@ -12,7 +13,7 @@ class Menu extends Board
 	
 	public function addMultipleItemSelect(items:Array<WorldItem>, tileX:Int, tileY:Int):Void {
 		active = true;
-		var menuSelectItems:Array<MenuSelectItem> = [];
+		menuSelectItems = [];
 		for (item in items) {
 			var menuSelectItem:MenuSelectItem = new MenuSelectItem(item.spriteCharCode, item.color);
 			menuSelectItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuSelectItem.spriteCharCode));
@@ -52,11 +53,23 @@ class Menu extends Board
 	}
 	
 	public function nextSelection():Void {
-		//
+		for (i in 0...menuSelectItems.length) {
+			if (menuSelectItems[i].selected == true) {
+				menuSelectItems[i].select(false);
+				menuSelectItems[i < menuSelectItems.length - 1 ? i + 1 : 0].select(true);
+				break;
+			}
+		}
 	}
 	
 	public function previousSelection():Void {
-		//
+		for (i in 0...menuSelectItems.length) {
+			if (menuSelectItems[i].selected == true) {
+				menuSelectItems[i].select(false);
+				menuSelectItems[i > 0 ? i - 1 : menuSelectItems.length - 1].select(true);
+				break;
+			}
+		}
 	}
 	
 	public function exitMenu():Void {
