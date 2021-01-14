@@ -9,6 +9,7 @@ import openfl.ui.Mouse;
 import menu.Menu;
 import WorldTile.TileEvent;
 import WorldItem.ItemSelectEvent;
+import WorldItem.ItemEvent;
 
 class Main extends Sprite 
 {
@@ -30,6 +31,7 @@ class Main extends Sprite
 		stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
 		addEventListener(TileEvent.MULTIPLE_ITEM_SELECT, multipleItemSelect);
 		addEventListener(ItemSelectEvent.REQUEST_ACTIONS, requestActions);
+		addEventListener(ItemEvent.DROP, dropItem);
 		addEventListener(MenuEvent.EXIT_MENU, exitMenu);
 		
 		// load sprite bitmap data
@@ -121,6 +123,12 @@ class Main extends Sprite
 		var item:WorldItem = cast e.target;
 		var tile:WorldTile = cast item.parent;
 		menu.addMultipleActions(item, tile.tileX, tile.tileY);
+	}
+	
+	private function dropItem(e:ItemEvent):Void {
+		var item:WorldItem = cast e.target;
+		var tile:WorldTile = cast item.parent;
+		menu.dropItem(item, tile);
 	}
 	
 	private function enterFullscreen():Void {

@@ -144,6 +144,9 @@ class World extends Board
     //================================================================================
 	public function tileSelect():Void {
 		if (carriedItems.length > 0) {
+			for (item in carriedItems) {
+				item.drop();
+			}			
 			carriedItems = [];
 		} else {
 			var tile:WorldTile = cast getChildByName("tile_" + cursorX + "_" + cursorY);

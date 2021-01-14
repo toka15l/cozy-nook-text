@@ -1,6 +1,4 @@
 package menu;
-import openfl.display.Sprite;
-import openfl.display.Bitmap;
 import openfl.events.Event;
 
 class Menu extends Board
@@ -33,23 +31,58 @@ class Menu extends Board
 		drawMenu(cast menuActionItems, tileX, tileY);
 	}
 	
-	private function drawMenu(items:Array<MenuInteractiveItem>, tileX:Int, tileY:Int):Void {
-		active = true;
-		drawBorderPiece(201, tileX - 1, tileY + 1); // top left
-		drawBorderPiece(186, tileX - 1, tileY + 2); // middle left
-		drawBorderPiece(200, tileX - 1, tileY + 3); // bottom left
-		for (i in 0...items.length) {
-			drawBorderPiece(i == 0 ? 207 : 205, tileX + i, tileY + 1); // arrow or top middle
-			items[i].select(i == 0);
-			items[i].x = (tileX + i) * SpriteBitmapData.SPRITE_WIDTH;
-			items[i].y = (tileY + 2) * SpriteBitmapData.SPRITE_HEIGHT;
-			addChild(items[i]);
-			drawBorderPiece(205, tileX + i, tileY + 3); // bottom middle
+	public function dropItem(item:WorldItem, tile:WorldTile):Void {
+		var currentClass:Any = Type.getClass(item);
+		var containedClasses:Array<String> = [Type.getClassName(currentClass)];
+		while (currentClass != WorldItem) {
+			currentClass = Type.getSuperClass(currentClass);
+			containedClasses.push(Type.getClassName(currentClass));
 		}
-		var rightX:Int = tileX + items.length;
-		drawBorderPiece(187, rightX, tileY + 1); // top right
-		drawBorderPiece(186, rightX, tileY + 2); // middle right
-		drawBorderPiece(188, rightX, tileY + 3); // bottom right
+		var applicableDropActions:Array<DropAction> = [];
+		for (item in tile.items) {
+			for (dropAction in item.dropActions) {
+				for (applicableClass in dropAction.applicableClasses) {
+					for (containedClass in containedClasses) {
+						if (containedClass == applicableClass) {
+							applicableDropActions.push(dropAction);
+							break;
+						}
+					}
+				}
+			}
+		}
+		//trace(applicableDropActions);
+		var menuDropItems = [];
+		for (action in applicableDropActions) {
+			var menuActionItem:MenuActionItem = new MenuActionItem(action);
+			menuActionItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuActionItem.spriteCharCode));
+			menuDropItems.push(menuActionItem);
+		}
+		drawMenu(cast menuDropItems, tile.tileX, tile.tileY);
+		
+		
+		
+	}
+	
+	private function drawMenu(items:Array<MenuInteractiveItem>, tileX:Int, tileY:Int):Void {
+		if (items.length > 0) {
+			active = true;
+			drawBorderPiece(201, tileX - 1, tileY + 1); // top left
+			drawBorderPiece(186, tileX - 1, tileY + 2); // middle left
+			drawBorderPiece(200, tileX - 1, tileY + 3); // bottom left
+			for (i in 0...items.length) {
+				drawBorderPiece(i == 0 ? 207 : 205, tileX + i, tileY + 1); // arrow or top middle
+				items[i].select(i == 0);
+				items[i].x = (tileX + i) * SpriteBitmapData.SPRITE_WIDTH;
+				items[i].y = (tileY + 2) * SpriteBitmapData.SPRITE_HEIGHT;
+				addChild(items[i]);
+				drawBorderPiece(205, tileX + i, tileY + 3); // bottom middle
+			}
+			var rightX:Int = tileX + items.length;
+			drawBorderPiece(187, rightX, tileY + 1); // top right
+			drawBorderPiece(186, rightX, tileY + 2); // middle right
+			drawBorderPiece(188, rightX, tileY + 3); // bottom right
+		}
 	}
 	
 	private function drawBorderPiece(spriteCharCode:Int, tileX:Int, tileY:Int):Void {

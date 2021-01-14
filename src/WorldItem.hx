@@ -1,4 +1,5 @@
 package;
+import menu.DropAction;
 import openfl.events.Event;
 import menu.Menu;
 import menu.Action;
@@ -6,16 +7,14 @@ import menu.Action;
 class WorldItem extends Item
 {
 	public var actions:Array<Action>;
+	public var dropActions:Array<DropAction>;
 
 	public function new(spriteCharCode:Int, color:Int = null) {
 		super(spriteCharCode, color);
 		
 		this.actions = [];
+		this.dropActions = [];
 		
-		/*var actionPickUp:Action = new Action();
-		actionPickUp.string = "Pick Up";
-		actionPickUp.action = this.pickUp; 
-		actions.push(actionPickUp);*/
 		var actionPickUp:Action = new Action(30, 0x00FF00);
 		actionPickUp.action = this.pickUp;
 		actions.push(actionPickUp);
@@ -33,6 +32,10 @@ class WorldItem extends Item
 	
 	public function pickUp():Void {
 		dispatchEvent(new ItemEvent(ItemEvent.PICKUP));
+	}
+	
+	public function drop():Void {
+		dispatchEvent(new ItemEvent(ItemEvent.DROP));
 	}
 }
 
@@ -62,6 +65,7 @@ class ItemSelectEvent extends Event {
 
 class ItemEvent extends Event {
 	public static inline var PICKUP = "pickUp";
+	public static inline var DROP = "drop";
 	
 	public function new(type:String)
     {
