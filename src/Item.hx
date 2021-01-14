@@ -1,21 +1,20 @@
 package;
+import openfl.display.Sprite;
 import openfl.display.Bitmap;
 import openfl.display.BitmapData;
-import openfl.display.Sprite;
-import openfl.events.Event;
 import openfl.geom.ColorTransform;
 import openfl.geom.Rectangle;
-import menu.Menu;
-import menu.Action;
 
 class Item extends Sprite
 {
 	public var spriteCharCode:Int;
 	public var color:Int;
-	public var actions:Array<Action>;
 
-	public function new() {
+	public function new(spriteCharCode:Int, color:Int = null) {
 		super();
+		
+		this.spriteCharCode = spriteCharCode;
+		this.color = color;
 	}
 	
 	public function setBitmapData(bitmapData:BitmapData) {
@@ -29,51 +28,4 @@ class Item extends Sprite
 			addChild(new Bitmap(bitmapData));
 		}
 	}
-	
-	public function move(distanceX:Int, distanceY:Int):Void {
-		dispatchEvent(new ItemMoveEvent(ItemMoveEvent.MOVE, distanceX, distanceY));
-	}
-	
-	public function itemSelect():Void {
-		if (actions != null) {
-			dispatchEvent(new ItemSelectEvent(ItemSelectEvent.REQUEST_ACTIONS, actions));
-		}
-	}
-	
-	public function pickUp():Void {
-		dispatchEvent(new ItemEvent(ItemEvent.PICKUP));
-	}
-}
-
-class ItemMoveEvent extends Event {
-	public static inline var MOVE = "move";
-	public var distanceX:Int;
-	public var distanceY:Int;
-	
-	public function new(type:String, distanceX:Int, distanceY:Int)
-    {
-		this.distanceX = distanceX;
-		this.distanceY = distanceY;
-        super(type, true, false);
-    }
-}
-
-class ItemSelectEvent extends Event {
-	public static inline var REQUEST_ACTIONS = "requestActions";
-	public var actions:Array<Action> = null;
-	
-	public function new(type:String, actions:Array<Action>)
-    {
-		this.actions = actions;
-        super(type, true, false);
-    }
-}
-
-class ItemEvent extends Event {
-	public static inline var PICKUP = "pickUp";
-	
-	public function new(type:String)
-    {
-        super(type, true, false);
-    }
 }

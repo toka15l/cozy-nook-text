@@ -1,109 +1,121 @@
 package menu;
+import openfl.display.Sprite;
+import openfl.display.Bitmap;
+import openfl.events.Event;
 
 class Menu extends Board
 {
-	private static inline var DESELECTED_COLOR = 0x777777;
-	private var allActions:Array<Action> = [];
-	private var currentY:Int = 0;
-	private var currentAction:Action = null;
+	public var active:Bool = false;
+	public var menuSelectItems:Array<MenuSelectItem> = [];
+	public var menuActionItems:Array<MenuActionItem> = [];
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
-		this.spriteBitmapData = spriteBitmapData;
-		super(spriteBitmapData, 1);
+		super(spriteBitmapData);
 	}
 	
-	public function addMultipleActions(actions:Array<Action>, startX:Int):Void {
-		// insert space between menu object sections
-		if (currentY != 0) {
-			currentY += 2;
-		}		
-		var preselected:Bool = false;
-		for (i in 0...actions.length) {
-			if (actions[i].selected == true) {
-				preselected = true;
-			}
-			addAction(actions[i], startX, currentY);
-			currentY += 2;
-			allActions.push(actions[i]);
+	public function addMultipleItemSelect(items:Array<WorldItem>, tileX:Int, tileY:Int):Void {
+		menuSelectItems = [];
+		for (item in items) {
+			var menuSelectItem:MenuSelectItem = new MenuSelectItem(item);
+			menuSelectItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuSelectItem.spriteCharCode));
+			menuSelectItems.push(menuSelectItem);
 		}
-		if (preselected == false) {
-			selectAction(allActions[0]);
-		}
+		drawMenu(cast menuSelectItems, tileX, tileY);
 	}
 	
-	private function addAction(action:Action, x:Int, y:Int):Void {
-		for (i in 0...action.string.length) {
-			var item:Item = new Item();
-			if (action.selected == false) {
-				item.color = DESELECTED_COLOR;
-			}
-			item.spriteCharCode = action.string.charCodeAt(i);
-			addItemsToTile([item], x + i, y);
-			action.menuItems.push(item);
+	public function addMultipleActions(item:WorldItem, tileX:Int, tileY:Int):Void {
+		menuActionItems = [];
+		for (action in item.actions) {
+			var menuActionItem:MenuActionItem = new MenuActionItem(action);
+			menuActionItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuActionItem.spriteCharCode));
+			menuActionItems.push(menuActionItem);
 		}
+		drawMenu(cast menuActionItems, tileX, tileY);
+	}
+	
+	private function drawMenu(items:Array<MenuInteractiveItem>, tileX:Int, tileY:Int):Void {
+		active = true;
+		drawBorderPiece(201, tileX - 1, tileY + 1); // top left
+		drawBorderPiece(186, tileX - 1, tileY + 2); // middle left
+		drawBorderPiece(200, tileX - 1, tileY + 3); // bottom left
+		for (i in 0...items.length) {
+			drawBorderPiece(i == 0 ? 207 : 205, tileX + i, tileY + 1); // arrow or top middle
+			items[i].select(i == 0);
+			items[i].x = (tileX + i) * SpriteBitmapData.SPRITE_WIDTH;
+			items[i].y = (tileY + 2) * SpriteBitmapData.SPRITE_HEIGHT;
+			addChild(items[i]);
+			drawBorderPiece(205, tileX + i, tileY + 3); // bottom middle
+		}
+		var rightX:Int = tileX + items.length;
+		drawBorderPiece(187, rightX, tileY + 1); // top right
+		drawBorderPiece(186, rightX, tileY + 2); // middle right
+		drawBorderPiece(188, rightX, tileY + 3); // bottom right
+	}
+	
+	private function drawBorderPiece(spriteCharCode:Int, tileX:Int, tileY:Int):Void {
+		var borderPiece:Item = new MenuItem(spriteCharCode);
+		borderPiece.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(borderPiece.spriteCharCode));
+		borderPiece.x = tileX * SpriteBitmapData.SPRITE_WIDTH;
+		borderPiece.y = tileY * SpriteBitmapData.SPRITE_HEIGHT;
+		addChild(borderPiece);
 	}
 	
 	public function nextSelection():Void {
-		for (i in 0...allActions.length) {
-			if (allActions[i].selected == true) {
-				selectAction(allActions[i], false);
-				if (i + 1 >= allActions.length) {
-					selectAction(allActions[0], true);
-				} else {
-					selectAction(allActions[i + 1], true);
-				}
-				break;
-			}
-		}
+		navigate(menuSelectItems.length > 0 ? cast menuSelectItems : cast menuActionItems, 1);
 	}
 	
 	public function previousSelection():Void {
-		for (i in 0...allActions.length) {
-			if (allActions[i].selected == true) {
-				selectAction(allActions[i], false);
-				if (i - 1 < 0) {
-					selectAction(allActions[allActions.length - 1], true);
-				} else {
-					selectAction(allActions[i - 1], true);
-				}
+		navigate(menuSelectItems.length > 0 ? cast menuSelectItems : cast menuActionItems, -1);
+	}
+	
+	private function navigate(menuInteractiveItems:Array<MenuInteractiveItem>, direction:Int):Void {
+		for (i in 0...menuInteractiveItems.length) {
+			if (menuInteractiveItems[i].selected == true) {
+				menuInteractiveItems[i].select(false);
+				direction == 1 ? menuInteractiveItems[i < menuInteractiveItems.length - 1 ? i + 1 : 0].select(true) : menuInteractiveItems[i > 0 ? i - 1 : menuInteractiveItems.length - 1].select(true);
 				break;
 			}
 		}
 	}
 	
-	private function selectAction(action:Action, select:Bool = true):Void {
-		var startX:Int = -1;
-		var startY:Int = -1;
-		for (item in action.menuItems) {
-			var tile:Tile = cast item.parent;
-			if (startX == -1 || tile.tileX < startX) {
-				startX = tile.tileX;
-			}
-			if (startY == -1 || tile.tileY < startY) {
-				startY = tile.tileY;
-			}
-			tile.removeItem(item);
-		}
-		action.selected = select;
-		action.menuItems = [];
-		addAction(action, startX, startY);
-		currentAction = action;
+	private function clearMenu():Void {
+		removeChildren();
+		menuSelectItems = [];
+		menuActionItems = [];
 	}
 	
 	public function exitMenu():Void {
-		for (action in allActions) {
-			action.selected = false;
-			action.menuItems = [];
-		}
-		emptyAllTiles();
-		allActions = [];
-		currentY = 0;
+		clearMenu();
+		active = false;		
+		dispatchEvent(new MenuEvent(MenuEvent.EXIT_MENU));
 	}
 	
-	public function executeSelectedAction():Void {
-		if (currentAction.action != null) {
-			currentAction.action();
-			exitMenu();
+	public function executeSelected():Void {
+		if (menuSelectItems.length > 0) {
+			for (menuSelectItem in menuSelectItems) {
+				if (menuSelectItem.selected == true) {
+					clearMenu();
+					menuSelectItem.item.itemSelect();
+					break;
+				}
+			}
+		} else {
+			for (menuActionItem in menuActionItems) {
+				if (menuActionItem.selected == true) {
+					exitMenu();
+					menuActionItem.action.action();
+					break;
+				}
+			}
 		}
 	}
+}
+
+class MenuEvent extends Event {
+	public static inline var EXIT_MENU = "exitMenu";
+	
+	public function new(type:String)
+    {
+        super(type, true, false);
+    }
 }

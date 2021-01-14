@@ -2,18 +2,16 @@ package;
 import openfl.events.Event;
 import menu.Action;
 
-class Container extends Item
+class Container extends WorldItem
 {
 	public var contents:Array<ContainerObject> = [];
 	
-	public function new() {
-		actions = [];
-		var actionRemoveItem:Action = new Action();
-		actionRemoveItem.string = "Remove Item";
+	public function new(spriteCharCode:Int, color:Int = null) {
+		super(spriteCharCode, color);
+		
+		var actionRemoveItem:Action = new Action(24, 0x00FF00);
 		actionRemoveItem.action = this.removeItem;
 		actions.push(actionRemoveItem);
-		
-		super();
 	}
 	
 	public function addItem(item:ContainerObject):Void {
@@ -24,7 +22,7 @@ class Container extends Item
 		if (contents.length > 0) {
 			if (contents[0].count > 1) {
 				contents[0].count--;
-				var item:Item = Type.createInstance(contents[0].itemClass, []);
+				var item:WorldItem = Type.createInstance(contents[0].itemClass, []);
 				dispatchEvent(new ContainerEvent(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, item));
 			}
 		}
@@ -33,9 +31,9 @@ class Container extends Item
 
 class ContainerEvent extends Event {
 	public static inline var REMOVE_ITEM_FROM_CONTAINER = "removeItemFromContainer";
-	public var item:Item;
+	public var item:WorldItem;
 	
-	public function new(type:String, item:Item)
+	public function new(type:String, item:WorldItem)
     {
 		this.item = item;
         super(type, true, false);

@@ -7,6 +7,8 @@ import openfl.events.KeyboardEvent;
 import openfl.system.System;
 import openfl.ui.Mouse;
 import menu.Menu;
+import WorldTile.TileEvent;
+import WorldItem.ItemSelectEvent;
 
 class Main extends Sprite 
 {
@@ -26,7 +28,9 @@ class Main extends Sprite
 		
 		// event listeners
 		stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
-		addEventListener(Item.ItemSelectEvent.REQUEST_ACTIONS, requestActions);
+		addEventListener(TileEvent.MULTIPLE_ITEM_SELECT, multipleItemSelect);
+		addEventListener(ItemSelectEvent.REQUEST_ACTIONS, requestActions);
+		addEventListener(MenuEvent.EXIT_MENU, exitMenu);
 		
 		// load sprite bitmap data
 		spriteBitmapData = new SpriteBitmapData();
@@ -43,33 +47,33 @@ class Main extends Sprite
 	private function keyUp(e:KeyboardEvent):Void {
 		switch (e.keyCode) {
 			case 13: // enter
-				menu.isEmpty() == false ? menu.executeSelectedAction() : executeMode();
+				menu.active == true ? menu.executeSelected() : executeMode();
 			case 27: // esc
-				if (menu.isEmpty() == false) {
+				if (menu.active == true) {
 					menu.exitMenu();
 				} else {
 					stage.displayState == StageDisplayState.FULL_SCREEN ? exitFullscreen() : exit();
 				}
 			case 37: // left
-				if (menu.isEmpty() == false) {
+				if (menu.active == true) {
 					menu.previousSelection();
 				} else {
 					world.move((e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1) * -1, 0);
 				}
 			case 38: // up
-				if (menu.isEmpty() == false) {
+				if (menu.active == true) {
 					menu.previousSelection();
 				} else {
 					world.move(0, (e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1) * -1);
 				}
 			case 40: // down
-				if (menu.isEmpty() == false) {
+				if (menu.active == true) {
 					menu.nextSelection();
 				} else {
 					world.move(0, (e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1));
 				}				
 			case 39: // right
-				if (menu.isEmpty() == false) {
+				if (menu.active == true) {
 					menu.nextSelection();
 				} else {
 					world.move((e.shiftKey == true ? SHIFT_MOVE_MULTIPLIER : 1), 0);
@@ -81,11 +85,21 @@ class Main extends Sprite
 			case 75: // k
 				currentMode = MODE_SINGLE_TILE_SELECT;
 			case 187: // +=
-				e.shiftKey == true ? world.zoomIn() : null;
+				if (e.shiftKey == true) {
+					world.zoomIn();
+					menu.zoomIn();
+				}
 			case 189: // -_
-				e.shiftKey == true ? world.zoomOut() : null;
+				if (e.shiftKey == true) {
+					world.zoomOut();
+					menu.zoomOut();
+				}
 			default:
 		}
+	}
+	
+	private function exitMenu(e:MenuEvent):Void {
+		world.showCursor(true);
 	}
 	
 	private function executeMode():Void {
@@ -97,8 +111,16 @@ class Main extends Sprite
 		}
 	}
 	
-	private function requestActions(e:Item.ItemSelectEvent):Void {
-		menu.addMultipleActions(e.actions, 1);
+	private function multipleItemSelect(e:TileEvent):Void {
+		world.showCursor(false);
+		var tile:WorldTile = cast e.target;
+		menu.addMultipleItemSelect(e.items, tile.tileX, tile.tileY);
+	}
+	
+	private function requestActions(e:ItemSelectEvent):Void {
+		var item:WorldItem = cast e.target;
+		var tile:WorldTile = cast item.parent;
+		menu.addMultipleActions(item, tile.tileX, tile.tileY);
 	}
 	
 	private function enterFullscreen():Void {

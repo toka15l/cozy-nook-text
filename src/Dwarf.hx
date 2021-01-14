@@ -1,9 +1,8 @@
 package;
 
-class Dwarf extends Item 
+class Dwarf extends WorldItem
 {
 	public function new() {
-		spriteCharCode = 2;
-		super();
+		super(2);
 	}	
 }

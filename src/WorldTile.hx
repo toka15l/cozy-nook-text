@@ -2,12 +2,12 @@ package;
 import openfl.display.Sprite;
 import openfl.events.Event;
 
-class Tile extends Sprite 
+class WorldTile extends Sprite 
 {
 	public var tileX:Int = null;
 	public var tileY:Int = null;
-	public var items:Array<Item> = [];
 	private var currentItemIndex:Int = 0;
+	public var items:Array<WorldItem> = [];
 
 	public function new() {
 		super();
@@ -16,9 +16,9 @@ class Tile extends Sprite
 	//================================================================================
     // ITEM ADD/REMOVE
     //================================================================================
-	public function addItem(item:Item):Void {
-		items.push(item);
+	public function addItem(item:WorldItem):Void {
 		addChild(item);
+		items.push(item);
 		if (items.length > 1) {
 			items[currentItemIndex].visible = false;
 			currentItemIndex = items.length - 1;
@@ -28,7 +28,7 @@ class Tile extends Sprite
 		}
 	}
 	
-	public function removeItem(item:Item):Void {
+	public function removeItem(item:WorldItem):Void {
 		if (items.length - 1 < 2) {
 			dispatchEvent(new TileEvent(TileEvent.DEREGISTER_CONTAINS_MULTIPLE_ITEMS));
 		}
@@ -73,10 +73,11 @@ class Tile extends Sprite
     // TILE SELECT
     //================================================================================
 	public function tileSelect():Void {
-		for (item in items) {
-			if (Type.getClass(item) != Plus) {
-				item.itemSelect();
-			}
+		if (items.length == 1) {
+			items[0].itemSelect();
+		}
+		if (items.length > 1) {
+			dispatchEvent(new TileEvent(TileEvent.MULTIPLE_ITEM_SELECT, items));
 		}
 	}
 }
@@ -84,9 +85,12 @@ class Tile extends Sprite
 class TileEvent extends Event {
 	public static inline var REGISTER_CONTAINS_MULTIPLE_ITEMS = "registerContainsMultipleItems";
 	public static inline var DEREGISTER_CONTAINS_MULTIPLE_ITEMS = "deregisterContainsMultipleItems";
+	public static inline var MULTIPLE_ITEM_SELECT = "multipleItemSelect";
+	public var items:Array<WorldItem> = null;
 	
-	public function new(type:String)
+	public function new(type:String, items:Array<WorldItem> = null)
     {
+		this.items = items;
         super(type, true, false);
     }
 }
