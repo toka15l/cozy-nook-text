@@ -6,6 +6,7 @@ class Menu extends Board
 	public var active:Bool = false;
 	public var menuSelectItems:Array<MenuSelectItem> = [];
 	public var menuActionItems:Array<MenuActionItem> = [];
+	public var menuDropItems:Array<MenuActionItem> = [];
 	private var dropItem:WorldItem;
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
@@ -67,7 +68,7 @@ class Menu extends Board
 	
 	private function addMultipleDropActions(targetItem:WorldItem):Void {
 		var tile:WorldTile = cast targetItem.parent;
-		var menuDropItems = [];
+		menuDropItems = [];
 		for (action in getApplicableDropActions(dropItem, targetItem)) {
 			var menuActionItem:MenuActionItem = new MenuActionItem(action);
 			menuActionItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuActionItem.spriteCharCode));
@@ -127,6 +128,7 @@ class Menu extends Board
 		removeChildren();
 		menuSelectItems = [];
 		menuActionItems = [];
+		menuDropItems = [];
 	}
 	
 	public function exitMenu():Void {
@@ -149,11 +151,19 @@ class Menu extends Board
 					break;
 				}
 			}
-		} else {
+		} else if (menuActionItems.length > 0) {
 			for (menuActionItem in menuActionItems) {
 				if (menuActionItem.selected == true) {
 					exitMenu();
 					menuActionItem.action.action();
+					break;
+				}
+			}
+		} else if (menuDropItems.length > 0) {
+			for (menuDropItem in menuDropItems) {
+				if (menuDropItem.selected == true) {
+					exitMenu();
+					menuDropItem.action.action();
 					break;
 				}
 			}
