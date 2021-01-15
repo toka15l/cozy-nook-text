@@ -6,6 +6,7 @@ class Menu extends Board
 	public var active:Bool = false;
 	public var menuSelectItems:Array<MenuSelectItem> = [];
 	public var menuActionItems:Array<MenuActionItem> = [];
+	private var dropItem:WorldItem;
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
 		super(spriteBitmapData);
@@ -31,37 +32,48 @@ class Menu extends Board
 		drawMenu(cast menuActionItems, tileX, tileY);
 	}
 	
-	public function dropItem(item:WorldItem, tile:WorldTile):Void {
-		var currentClass:Any = Type.getClass(item);
+	public function addItemDrops(dropItem:WorldItem):Void {
+		this.dropItem = dropItem;
+		var tile:WorldTile = cast dropItem.parent;
+		var applicableDropItems:Array<WorldItem> = [];
+		for (targetItem in tile.items) {
+			if (targetItem != dropItem && getApplicableDropActions(dropItem, targetItem).length > 0) {
+				applicableDropItems.push(targetItem);
+			}
+		}
+		addMultipleItemSelect(applicableDropItems, tile.tileX, tile.tileY);
+	}
+	
+	private function getApplicableDropActions(dropItem:WorldItem, targetItem:WorldItem):Array<DropAction> {
+		var currentClass:Any = Type.getClass(dropItem);
 		var containedClasses:Array<String> = [Type.getClassName(currentClass)];
 		while (currentClass != WorldItem) {
 			currentClass = Type.getSuperClass(currentClass);
 			containedClasses.push(Type.getClassName(currentClass));
 		}
 		var applicableDropActions:Array<DropAction> = [];
-		for (item in tile.items) {
-			for (dropAction in item.dropActions) {
-				for (applicableClass in dropAction.applicableClasses) {
-					for (containedClass in containedClasses) {
-						if (containedClass == applicableClass) {
-							applicableDropActions.push(dropAction);
-							break;
-						}
+		for (dropAction in targetItem.dropActions) {
+			for (applicableClass in dropAction.applicableClasses) {
+				for (containedClass in containedClasses) {
+					if (containedClass == applicableClass) {
+						applicableDropActions.push(dropAction);
+						break; // TODO: break twice for efficiency
 					}
 				}
 			}
 		}
-		//trace(applicableDropActions);
+		return applicableDropActions;
+	}
+	
+	private function addMultipleDropActions(targetItem:WorldItem):Void {
+		var tile:WorldTile = cast targetItem.parent;
 		var menuDropItems = [];
-		for (action in applicableDropActions) {
+		for (action in getApplicableDropActions(dropItem, targetItem)) {
 			var menuActionItem:MenuActionItem = new MenuActionItem(action);
 			menuActionItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuActionItem.spriteCharCode));
 			menuDropItems.push(menuActionItem);
 		}
 		drawMenu(cast menuDropItems, tile.tileX, tile.tileY);
-		
-		
-		
 	}
 	
 	private function drawMenu(items:Array<MenuInteractiveItem>, tileX:Int, tileY:Int):Void {
@@ -119,7 +131,8 @@ class Menu extends Board
 	
 	public function exitMenu():Void {
 		clearMenu();
-		active = false;		
+		active = false;
+		dropItem = null;
 		dispatchEvent(new MenuEvent(MenuEvent.EXIT_MENU));
 	}
 	
@@ -128,7 +141,11 @@ class Menu extends Board
 			for (menuSelectItem in menuSelectItems) {
 				if (menuSelectItem.selected == true) {
 					clearMenu();
-					menuSelectItem.item.itemSelect();
+					if (dropItem != null) {
+						addMultipleDropActions(menuSelectItem.item);
+					} else {
+						menuSelectItem.item.itemSelect();
+					}
 					break;
 				}
 			}

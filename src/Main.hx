@@ -126,9 +126,7 @@ class Main extends Sprite
 	}
 	
 	private function dropItem(e:ItemEvent):Void {
-		var item:WorldItem = cast e.target;
-		var tile:WorldTile = cast item.parent;
-		menu.dropItem(item, tile);
+		menu.addItemDrops(cast e.target);
 	}
 	
 	private function enterFullscreen():Void {
