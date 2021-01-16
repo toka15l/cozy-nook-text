@@ -1,12 +1,12 @@
 package;
-import menu.Action;
+import menu.SelfAction;
 
 class MenuActionItem extends MenuInteractiveItem
 {
-	public var action:Action;
+	public var selfAction:SelfAction;
 	
-	public function new(action:Action) {		
-		super(action.spriteCharCode, action.color);
-		this.action = action;
+	public function new(selfAction:SelfAction) {		
+		super(selfAction.spriteCharCode, selfAction.color);
+		this.selfAction = selfAction;
 	}
 }

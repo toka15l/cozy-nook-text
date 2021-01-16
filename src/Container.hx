@@ -1,6 +1,6 @@
 package;
 import openfl.events.Event;
-import menu.Action;
+import menu.SelfAction;
 import menu.DropAction;
 
 class Container extends WorldItem
@@ -10,9 +10,17 @@ class Container extends WorldItem
 	public function new(spriteCharCode:Int, color:Int = null) {
 		super(spriteCharCode, color);
 		
-		var actionRemoveItem:Action = new Action(24, 0x00FF00);
-		actionRemoveItem.action = this.removeItem;
-		actions.push(actionRemoveItem);
+		var actionRemoveItem:SelfAction = new SelfAction(24, 0x00FF00);
+		actionRemoveItem.selfActionFunction = function ():Void {
+			if (contents.length > 0) {
+				if (contents[0].count > 1) {
+					contents[0].count--;
+					var item:WorldItem = Type.createInstance(contents[0].itemClass, []);
+					dispatchEvent(new ContainerEvent(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, item));
+				}
+			}
+		}
+		selfActions.push(actionRemoveItem);
 		
 		var actionInsertItem:DropAction = new DropAction(70, 0xFF0000);
 		actionInsertItem.dropAction = function (dropItem:WorldItem):Void {
@@ -24,16 +32,6 @@ class Container extends WorldItem
 	
 	public function addItem(item:ContainerObject):Void {
 		contents.push(item);
-	}
-	
-	public function removeItem():Void {
-		if (contents.length > 0) {
-			if (contents[0].count > 1) {
-				contents[0].count--;
-				var item:WorldItem = Type.createInstance(contents[0].itemClass, []);
-				dispatchEvent(new ContainerEvent(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, item));
-			}
-		}
 	}
 }
 

@@ -26,8 +26,8 @@ class Menu extends Board
 	
 	public function addMultipleActions(item:WorldItem, tileX:Int, tileY:Int):Void {
 		menuActionItems = [];
-		for (action in item.actions) {
-			var menuActionItem:MenuActionItem = new MenuActionItem(action);
+		for (selfAction in item.selfActions) {
+			var menuActionItem:MenuActionItem = new MenuActionItem(selfAction);
 			menuActionItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuActionItem.spriteCharCode));
 			menuActionItems.push(menuActionItem);
 		}
@@ -156,7 +156,7 @@ class Menu extends Board
 			for (menuActionItem in menuActionItems) {
 				if (menuActionItem.selected == true) {
 					exitMenu();
-					menuActionItem.action.action();
+					menuActionItem.selfAction.selfActionFunction();
 					break;
 				}
 			}

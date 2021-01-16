@@ -2,22 +2,22 @@ package;
 import menu.DropAction;
 import openfl.events.Event;
 import menu.Menu;
-import menu.Action;
+import menu.SelfAction;
 
 class WorldItem extends Item
 {
-	public var actions:Array<Action>;
+	public var selfActions:Array<SelfAction>;
 	public var dropActions:Array<DropAction>;
 
 	public function new(spriteCharCode:Int, color:Int = null) {
 		super(spriteCharCode, color);
 		
-		this.actions = [];
+		this.selfActions = [];
 		this.dropActions = [];
 		
-		var actionPickUp:Action = new Action(30, 0x00FF00);
-		actionPickUp.action = this.pickUp;
-		actions.push(actionPickUp);
+		var actionPickUp:SelfAction = new SelfAction(30, 0x00FF00);
+		actionPickUp.selfActionFunction = this.pickUp;
+		selfActions.push(actionPickUp);
 	}
 	
 	public function move(distanceX:Int, distanceY:Int):Void {
@@ -25,8 +25,8 @@ class WorldItem extends Item
 	}
 	
 	public function itemSelect():Void {
-		if (actions != null) {
-			dispatchEvent(new ItemSelectEvent(ItemSelectEvent.REQUEST_ACTIONS, actions));
+		if (selfActions != null) {
+			dispatchEvent(new ItemSelectEvent(ItemSelectEvent.REQUEST_ACTIONS, selfActions));
 		}
 	}
 	
@@ -54,11 +54,11 @@ class ItemMoveEvent extends Event {
 
 class ItemSelectEvent extends Event {
 	public static inline var REQUEST_ACTIONS = "requestActions";
-	public var actions:Array<Action> = null;
+	public var selfActions:Array<SelfAction> = null;
 	
-	public function new(type:String, actions:Array<Action>)
+	public function new(type:String, selfActions:Array<SelfAction>)
     {
-		this.actions = actions;
+		this.selfActions = selfActions;
         super(type, true, false);
     }
 }
