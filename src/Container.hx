@@ -15,7 +15,9 @@ class Container extends WorldItem
 		actions.push(actionRemoveItem);
 		
 		var actionInsertItem:DropAction = new DropAction(70, 0xFF0000);
-		actionInsertItem.action = this.insertItem;
+		actionInsertItem.dropAction = function (dropItem:WorldItem):Void {
+			trace("insert item " + dropItem);
+		}
 		actionInsertItem.applicableClasses = ['WorldItem'];
 		dropActions.push(actionInsertItem);
 	}
@@ -32,10 +34,6 @@ class Container extends WorldItem
 				dispatchEvent(new ContainerEvent(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, item));
 			}
 		}
-	}
-	
-	public function insertItem():Void {
-		trace("insert");
 	}
 }
 

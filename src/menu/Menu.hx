@@ -1,4 +1,5 @@
 package menu;
+import MenuActionItem;
 import openfl.events.Event;
 
 class Menu extends Board
@@ -6,7 +7,7 @@ class Menu extends Board
 	public var active:Bool = false;
 	public var menuSelectItems:Array<MenuSelectItem> = [];
 	public var menuActionItems:Array<MenuActionItem> = [];
-	public var menuDropItems:Array<MenuActionItem> = [];
+	public var menuDropItems:Array<MenuDropActionItem> = [];
 	private var dropItem:WorldItem;
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
@@ -69,8 +70,8 @@ class Menu extends Board
 	private function addMultipleDropActions(targetItem:WorldItem):Void {
 		var tile:WorldTile = cast targetItem.parent;
 		menuDropItems = [];
-		for (action in getApplicableDropActions(dropItem, targetItem)) {
-			var menuActionItem:MenuActionItem = new MenuActionItem(action);
+		for (dropAction in getApplicableDropActions(dropItem, targetItem)) {
+			var menuActionItem:MenuDropActionItem = new MenuDropActionItem(dropAction);
 			menuActionItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuActionItem.spriteCharCode));
 			menuDropItems.push(menuActionItem);
 		}
@@ -162,8 +163,8 @@ class Menu extends Board
 		} else if (menuDropItems.length > 0) {
 			for (menuDropItem in menuDropItems) {
 				if (menuDropItem.selected == true) {
+					menuDropItem.dropAction.dropAction(dropItem);
 					exitMenu();
-					menuDropItem.action.action();
 					break;
 				}
 			}
