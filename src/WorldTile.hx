@@ -77,7 +77,7 @@ class WorldTile extends Sprite
 			items[0].itemSelect();
 		}
 		if (items.length > 1) {
-			dispatchEvent(new TileEvent(TileEvent.MULTIPLE_ITEM_SELECT, items));
+			dispatchEvent(new TileEvent(TileEvent.TILE_SELECT, items));
 		}
 	}
 }
@@ -85,7 +85,7 @@ class WorldTile extends Sprite
 class TileEvent extends Event {
 	public static inline var REGISTER_CONTAINS_MULTIPLE_ITEMS = "registerContainsMultipleItems";
 	public static inline var DEREGISTER_CONTAINS_MULTIPLE_ITEMS = "deregisterContainsMultipleItems";
-	public static inline var MULTIPLE_ITEM_SELECT = "multipleItemSelect";
+	public static inline var TILE_SELECT = "tileSelect";
 	public var items:Array<WorldItem> = null;
 	
 	public function new(type:String, items:Array<WorldItem> = null)

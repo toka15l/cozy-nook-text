@@ -1,7 +1,7 @@
 package;
 import menu.SelfAction;
 
-class MenuActionItem extends MenuInteractiveItem
+class MenuSelfActionItem extends MenuInteractiveItem
 {
 	public var selfAction:SelfAction;
 	

@@ -1,7 +1,7 @@
 package;
 import openfl.events.Event;
 import menu.SelfAction;
-import menu.DropAction;
+import menu.TargetAction;
 
 class Container extends WorldItem
 {
@@ -22,12 +22,12 @@ class Container extends WorldItem
 		}
 		selfActions.push(actionRemoveItem);
 		
-		var actionInsertItem:DropAction = new DropAction(70, 0xFF0000);
-		actionInsertItem.dropAction = function (dropItem:WorldItem):Void {
+		var actionInsertItem:TargetAction = new TargetAction(70, 0xFF0000);
+		actionInsertItem.targetAction = function (dropItem:WorldItem):Void {
 			trace("insert item " + dropItem);
 		}
 		actionInsertItem.applicableClasses = ['WorldItem'];
-		dropActions.push(actionInsertItem);
+		targetActions.push(actionInsertItem);
 	}
 	
 	public function addItem(item:ContainerObject):Void {

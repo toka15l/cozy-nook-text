@@ -1,60 +1,61 @@
 package menu;
-import MenuActionItem;
+import MenuSelfActionItem;
 import openfl.events.Event;
 
 class Menu extends Board
 {
 	public var active:Bool = false;
 	public var menuSelectItems:Array<MenuSelectItem> = [];
-	public var menuActionItems:Array<MenuActionItem> = [];
-	public var menuDropItems:Array<MenuDropActionItem> = [];
+	public var menuActionItems:Array<MenuSelfActionItem> = [];
+	public var menuTargetItems:Array<MenuTargetActionItem> = [];
 	private var dropItem:WorldItem;
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
 		super(spriteBitmapData);
 	}
 	
-	public function addMultipleItemSelect(items:Array<WorldItem>, tileX:Int, tileY:Int):Void {
+	public function displayItemSelect(items:Array<WorldItem>, tile:WorldTile):Void {
 		menuSelectItems = [];
 		for (item in items) {
 			var menuSelectItem:MenuSelectItem = new MenuSelectItem(item);
 			menuSelectItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuSelectItem.spriteCharCode));
 			menuSelectItems.push(menuSelectItem);
 		}
-		drawMenu(cast menuSelectItems, tileX, tileY);
+		drawMenu(cast menuSelectItems, tile);
 	}
 	
-	public function addMultipleActions(item:WorldItem, tileX:Int, tileY:Int):Void {
+	public function displaySelfActionSelect(item:WorldItem):Void {
+		var tile:WorldTile = cast item.parent;
 		menuActionItems = [];
 		for (selfAction in item.selfActions) {
-			var menuActionItem:MenuActionItem = new MenuActionItem(selfAction);
+			var menuActionItem:MenuSelfActionItem = new MenuSelfActionItem(selfAction);
 			menuActionItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuActionItem.spriteCharCode));
 			menuActionItems.push(menuActionItem);
 		}
-		drawMenu(cast menuActionItems, tileX, tileY);
+		drawMenu(cast menuActionItems, tile);
 	}
 	
-	public function addItemDrops(dropItem:WorldItem):Void {
+	public function displayTargetActionSelect(dropItem:WorldItem):Void {
 		this.dropItem = dropItem;
 		var tile:WorldTile = cast dropItem.parent;
-		var applicableDropItems:Array<WorldItem> = [];
+		var applicableTargetItems:Array<WorldItem> = [];
 		for (targetItem in tile.items) {
-			if (targetItem != dropItem && getApplicableDropActions(dropItem, targetItem).length > 0) {
-				applicableDropItems.push(targetItem);
+			if (targetItem != dropItem && getApplicableTargetActions(dropItem, targetItem).length > 0) {
+				applicableTargetItems.push(targetItem);
 			}
 		}
-		addMultipleItemSelect(applicableDropItems, tile.tileX, tile.tileY);
+		displayItemSelect(applicableTargetItems, tile);
 	}
 	
-	private function getApplicableDropActions(dropItem:WorldItem, targetItem:WorldItem):Array<DropAction> {
+	private function getApplicableTargetActions(dropItem:WorldItem, targetItem:WorldItem):Array<TargetAction> {
 		var currentClass:Any = Type.getClass(dropItem);
 		var containedClasses:Array<String> = [Type.getClassName(currentClass)];
 		while (currentClass != WorldItem) {
 			currentClass = Type.getSuperClass(currentClass);
 			containedClasses.push(Type.getClassName(currentClass));
 		}
-		var applicableDropActions:Array<DropAction> = [];
-		for (dropAction in targetItem.dropActions) {
+		var applicableDropActions:Array<TargetAction> = [];
+		for (dropAction in targetItem.targetActions) {
 			for (applicableClass in dropAction.applicableClasses) {
 				for (containedClass in containedClasses) {
 					if (containedClass == applicableClass) {
@@ -69,33 +70,33 @@ class Menu extends Board
 	
 	private function addMultipleDropActions(targetItem:WorldItem):Void {
 		var tile:WorldTile = cast targetItem.parent;
-		menuDropItems = [];
-		for (dropAction in getApplicableDropActions(dropItem, targetItem)) {
-			var menuActionItem:MenuDropActionItem = new MenuDropActionItem(dropAction);
+		menuTargetItems = [];
+		for (targetAction in getApplicableTargetActions(dropItem, targetItem)) {
+			var menuActionItem:MenuTargetActionItem = new MenuTargetActionItem(targetAction);
 			menuActionItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuActionItem.spriteCharCode));
-			menuDropItems.push(menuActionItem);
+			menuTargetItems.push(menuActionItem);
 		}
-		drawMenu(cast menuDropItems, tile.tileX, tile.tileY);
+		drawMenu(cast menuTargetItems, tile);
 	}
 	
-	private function drawMenu(items:Array<MenuInteractiveItem>, tileX:Int, tileY:Int):Void {
+	private function drawMenu(items:Array<MenuInteractiveItem>, tile:WorldTile):Void {
 		if (items.length > 0) {
 			active = true;
-			drawBorderPiece(201, tileX - 1, tileY + 1); // top left
-			drawBorderPiece(186, tileX - 1, tileY + 2); // middle left
-			drawBorderPiece(200, tileX - 1, tileY + 3); // bottom left
+			drawBorderPiece(201, tile.tileX - 1, tile.tileY + 1); // top left
+			drawBorderPiece(186, tile.tileX - 1, tile.tileY + 2); // middle left
+			drawBorderPiece(200, tile.tileX - 1, tile.tileY + 3); // bottom left
 			for (i in 0...items.length) {
-				drawBorderPiece(i == 0 ? 207 : 205, tileX + i, tileY + 1); // arrow or top middle
+				drawBorderPiece(i == 0 ? 207 : 205, tile.tileX + i, tile.tileY + 1); // arrow or top middle
 				items[i].select(i == 0);
-				items[i].x = (tileX + i) * SpriteBitmapData.SPRITE_WIDTH;
-				items[i].y = (tileY + 2) * SpriteBitmapData.SPRITE_HEIGHT;
+				items[i].x = (tile.tileX + i) * SpriteBitmapData.SPRITE_WIDTH;
+				items[i].y = (tile.tileY + 2) * SpriteBitmapData.SPRITE_HEIGHT;
 				addChild(items[i]);
-				drawBorderPiece(205, tileX + i, tileY + 3); // bottom middle
+				drawBorderPiece(205, tile.tileX + i, tile.tileY + 3); // bottom middle
 			}
-			var rightX:Int = tileX + items.length;
-			drawBorderPiece(187, rightX, tileY + 1); // top right
-			drawBorderPiece(186, rightX, tileY + 2); // middle right
-			drawBorderPiece(188, rightX, tileY + 3); // bottom right
+			var rightX:Int = tile.tileX + items.length;
+			drawBorderPiece(187, rightX, tile.tileY + 1); // top right
+			drawBorderPiece(186, rightX, tile.tileY + 2); // middle right
+			drawBorderPiece(188, rightX, tile.tileY + 3); // bottom right
 		}
 	}
 	
@@ -129,7 +130,7 @@ class Menu extends Board
 		removeChildren();
 		menuSelectItems = [];
 		menuActionItems = [];
-		menuDropItems = [];
+		menuTargetItems = [];
 	}
 	
 	public function exitMenu():Void {
@@ -160,10 +161,10 @@ class Menu extends Board
 					break;
 				}
 			}
-		} else if (menuDropItems.length > 0) {
-			for (menuDropItem in menuDropItems) {
-				if (menuDropItem.selected == true) {
-					menuDropItem.dropAction.dropAction(dropItem);
+		} else if (menuTargetItems.length > 0) {
+			for (menuTargetItem in menuTargetItems) {
+				if (menuTargetItem.selected == true) {
+					menuTargetItem.targetAction.targetAction(dropItem);
 					exitMenu();
 					break;
 				}

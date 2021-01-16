@@ -1,5 +1,5 @@
 package;
-import menu.DropAction;
+import menu.TargetAction;
 import openfl.events.Event;
 import menu.Menu;
 import menu.SelfAction;
@@ -7,13 +7,13 @@ import menu.SelfAction;
 class WorldItem extends Item
 {
 	public var selfActions:Array<SelfAction>;
-	public var dropActions:Array<DropAction>;
+	public var targetActions:Array<TargetAction>;
 
 	public function new(spriteCharCode:Int, color:Int = null) {
 		super(spriteCharCode, color);
 		
 		this.selfActions = [];
-		this.dropActions = [];
+		this.targetActions = [];
 		
 		var actionPickUp:SelfAction = new SelfAction(30, 0x00FF00);
 		actionPickUp.selfActionFunction = this.pickUp;
