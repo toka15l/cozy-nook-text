@@ -25,6 +25,7 @@ class Container extends WorldItem
 		var actionInsertItem:TargetAction = new TargetAction(70, 0xFF0000);
 		actionInsertItem.targetAction = function (dropItem:WorldItem):Void {
 			trace("insert item " + dropItem);
+			dropItem.removeFromTile();
 		}
 		actionInsertItem.applicableClasses = ['WorldItem'];
 		targetActions.push(actionInsertItem);
