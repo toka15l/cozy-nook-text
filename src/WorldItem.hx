@@ -31,7 +31,7 @@ class WorldItem extends Item
 	
 	public function itemSelect():Void {
 		if (selfActions != null) {
-			dispatchEvent(new ItemSelectEvent(ItemSelectEvent.REQUEST_ACTIONS, selfActions));
+			dispatchEvent(new ItemEvent(ItemEvent.SELECT, selfActions));
 		}
 	}
 	
@@ -57,23 +57,15 @@ class ItemMoveEvent extends Event {
     }
 }
 
-class ItemSelectEvent extends Event {
-	public static inline var REQUEST_ACTIONS = "requestActions";
-	public var selfActions:Array<SelfAction> = null;
-	
-	public function new(type:String, selfActions:Array<SelfAction>)
-    {
-		this.selfActions = selfActions;
-        super(type, true, false);
-    }
-}
-
 class ItemEvent extends Event {
 	public static inline var PICKUP = "pickUp";
 	public static inline var DROP = "drop";
+	public static inline var SELECT = "select";
+	public var selfActions:Array<SelfAction> = null;
 	
-	public function new(type:String)
+	public function new(type:String, selfActions:Array<SelfAction> = null)
     {
+		this.selfActions = selfActions;
         super(type, true, false);
     }
 }
