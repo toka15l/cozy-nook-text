@@ -1,38 +1,46 @@
 package;
+import menu.TargetAction;
 import openfl.events.Event;
 import menu.Menu;
-import menu.Action;
+import menu.SelfAction;
 
 class WorldItem extends Item
 {
-	public var actions:Array<Action>;
+	public var selfActions:Array<SelfAction>;
+	public var targetActions:Array<TargetAction>;
 
 	public function new(spriteCharCode:Int, color:Int = null) {
 		super(spriteCharCode, color);
 		
-		this.actions = [];
+		this.selfActions = [];
+		this.targetActions = [];
 		
-		/*var actionPickUp:Action = new Action();
-		actionPickUp.string = "Pick Up";
-		actionPickUp.action = this.pickUp; 
-		actions.push(actionPickUp);*/
-		var actionPickUp:Action = new Action(30, 0x00FF00);
-		actionPickUp.action = this.pickUp;
-		actions.push(actionPickUp);
+		var actionPickUp:SelfAction = new SelfAction(30, 0x00FF00);
+		actionPickUp.selfActionFunction = this.pickUp;
+		selfActions.push(actionPickUp);
 	}
 	
 	public function move(distanceX:Int, distanceY:Int):Void {
 		dispatchEvent(new ItemMoveEvent(ItemMoveEvent.MOVE, distanceX, distanceY));
 	}
 	
+	public function removeFromTile():Void {
+		var tile:WorldTile = cast this.parent;
+		tile.removeItem(this);
+	}
+	
 	public function itemSelect():Void {
-		if (actions != null) {
-			dispatchEvent(new ItemSelectEvent(ItemSelectEvent.REQUEST_ACTIONS, actions));
+		if (selfActions != null) {
+			dispatchEvent(new ItemEvent(ItemEvent.SELECT, selfActions));
 		}
 	}
 	
 	public function pickUp():Void {
 		dispatchEvent(new ItemEvent(ItemEvent.PICKUP));
+	}
+	
+	public function drop():Void {
+		dispatchEvent(new ItemEvent(ItemEvent.DROP));
 	}
 }
 
@@ -49,22 +57,15 @@ class ItemMoveEvent extends Event {
     }
 }
 
-class ItemSelectEvent extends Event {
-	public static inline var REQUEST_ACTIONS = "requestActions";
-	public var actions:Array<Action> = null;
-	
-	public function new(type:String, actions:Array<Action>)
-    {
-		this.actions = actions;
-        super(type, true, false);
-    }
-}
-
 class ItemEvent extends Event {
 	public static inline var PICKUP = "pickUp";
+	public static inline var DROP = "drop";
+	public static inline var SELECT = "select";
+	public var selfActions:Array<SelfAction> = null;
 	
-	public function new(type:String)
+	public function new(type:String, selfActions:Array<SelfAction> = null)
     {
+		this.selfActions = selfActions;
         super(type, true, false);
     }
 }

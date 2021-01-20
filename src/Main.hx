@@ -8,7 +8,7 @@ import openfl.system.System;
 import openfl.ui.Mouse;
 import menu.Menu;
 import WorldTile.TileEvent;
-import WorldItem.ItemSelectEvent;
+import WorldItem.ItemEvent;
 
 class Main extends Sprite 
 {
@@ -28,8 +28,9 @@ class Main extends Sprite
 		
 		// event listeners
 		stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
-		addEventListener(TileEvent.MULTIPLE_ITEM_SELECT, multipleItemSelect);
-		addEventListener(ItemSelectEvent.REQUEST_ACTIONS, requestActions);
+		addEventListener(TileEvent.TILE_SELECT, tileSelect);
+		addEventListener(ItemEvent.SELECT, itemSelect);
+		addEventListener(ItemEvent.DROP, dropItem);
 		addEventListener(MenuEvent.EXIT_MENU, exitMenu);
 		
 		// load sprite bitmap data
@@ -111,16 +112,17 @@ class Main extends Sprite
 		}
 	}
 	
-	private function multipleItemSelect(e:TileEvent):Void {
+	private function tileSelect(e:TileEvent):Void {
 		world.showCursor(false);
-		var tile:WorldTile = cast e.target;
-		menu.addMultipleItemSelect(e.items, tile.tileX, tile.tileY);
+		menu.displayItemSelect(e.items, e.target);
 	}
 	
-	private function requestActions(e:ItemSelectEvent):Void {
-		var item:WorldItem = cast e.target;
-		var tile:WorldTile = cast item.parent;
-		menu.addMultipleActions(item, tile.tileX, tile.tileY);
+	private function itemSelect(e:ItemEvent):Void {
+		menu.displaySelfActionSelect(e.target);
+	}
+	
+	private function dropItem(e:ItemEvent):Void {
+		menu.displayTargetItemSelect(e.target);
 	}
 	
 	private function enterFullscreen():Void {

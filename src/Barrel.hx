@@ -1,5 +1,4 @@
 package;
-import menu.Action;
 
 class Barrel extends Container
 {

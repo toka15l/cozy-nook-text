@@ -1,6 +1,7 @@
 package;
 import openfl.events.Event;
-import menu.Action;
+import menu.SelfAction;
+import menu.TargetAction;
 
 class Container extends WorldItem
 {
@@ -9,23 +10,44 @@ class Container extends WorldItem
 	public function new(spriteCharCode:Int, color:Int = null) {
 		super(spriteCharCode, color);
 		
-		var actionRemoveItem:Action = new Action(24, 0x00FF00);
-		actionRemoveItem.action = this.removeItem;
-		actions.push(actionRemoveItem);
+		var actionRemoveItem:SelfAction = new SelfAction(24, 0x00FF00);
+		actionRemoveItem.selfActionFunction = function ():Void {
+			if (contents.length > 0) {
+				contents[0].count--; // TODO: add ability to select which container object to remove item from
+				var item:WorldItem = Type.createInstance(contents[0].itemClass, []);
+				if (contents[0].count == 0) {
+					contents.splice(0, 1);
+				}
+				dispatchEvent(new ContainerEvent(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, item));
+			}
+		}
+		selfActions.push(actionRemoveItem);
+		
+		var actionInsertItem:TargetAction = new TargetAction(70, 0xFF0000);
+		actionInsertItem.targetAction = function (dropItem:WorldItem):Void {
+			var currentClass:Any = Type.getClass(dropItem);
+			var exists:Bool = false;
+			for (containerObject in contents) {
+				if (containerObject.itemClass == currentClass) {
+					exists = true;
+					containerObject.count++;
+					break;
+				}
+			}
+			if (exists == false) {
+				var containerObject:ContainerObject = new ContainerObject();
+				containerObject.itemClass = currentClass;
+				containerObject.count = 1;
+				addItem(containerObject);
+			}
+			dropItem.removeFromTile();
+		}
+		actionInsertItem.applicableClasses = ['WorldItem'];
+		targetActions.push(actionInsertItem);
 	}
 	
 	public function addItem(item:ContainerObject):Void {
 		contents.push(item);
-	}
-	
-	public function removeItem():Void {
-		if (contents.length > 0) {
-			if (contents[0].count > 1) {
-				contents[0].count--;
-				var item:WorldItem = Type.createInstance(contents[0].itemClass, []);
-				dispatchEvent(new ContainerEvent(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, item));
-			}
-		}
 	}
 }
 

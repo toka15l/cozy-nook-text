@@ -46,8 +46,7 @@ class World extends Board
 		var testBarrel:Barrel = new Barrel();
 		var pickles:ContainerObject = new ContainerObject();
 		pickles.itemClass = Pickle;
-		pickles.name = "Pickles";
-		pickles.count = 34;
+		pickles.count = 1;
 		testBarrel.addItem(pickles);
 		addItemToTile(testBarrel, 4, 4);
 		
@@ -144,6 +143,9 @@ class World extends Board
     //================================================================================
 	public function tileSelect():Void {
 		if (carriedItems.length > 0) {
+			for (item in carriedItems) {
+				item.drop();
+			}			
 			carriedItems = [];
 		} else {
 			var tile:WorldTile = cast getChildByName("tile_" + cursorX + "_" + cursorY);
