@@ -122,7 +122,7 @@ class Main extends Sprite
 	}
 	
 	private function dropItem(e:ItemEvent):Void {
-		menu.displayTargetActionSelect(e.target);
+		menu.displayTargetItemSelect(e.target);
 	}
 	
 	private function enterFullscreen():Void {

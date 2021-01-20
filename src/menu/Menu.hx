@@ -35,7 +35,7 @@ class Menu extends Board
 		drawMenu(cast menuActionItems, tile);
 	}
 	
-	public function displayTargetActionSelect(dropItem:WorldItem):Void {
+	public function displayTargetItemSelect(dropItem:WorldItem):Void {
 		this.dropItem = dropItem;
 		var tile:WorldTile = cast dropItem.parent;
 		var applicableTargetItems:Array<WorldItem> = [];
@@ -68,7 +68,7 @@ class Menu extends Board
 		return applicableDropActions;
 	}
 	
-	private function addMultipleDropActions(targetItem:WorldItem):Void {
+	private function displayTargetActionSelect(targetItem:WorldItem):Void {
 		var tile:WorldTile = cast targetItem.parent;
 		menuTargetItems = [];
 		for (targetAction in getApplicableTargetActions(dropItem, targetItem)) {
@@ -145,11 +145,7 @@ class Menu extends Board
 			for (menuSelectItem in menuSelectItems) {
 				if (menuSelectItem.selected == true) {
 					clearMenu();
-					if (dropItem != null) {
-						addMultipleDropActions(menuSelectItem.item);
-					} else {
-						menuSelectItem.item.itemSelect();
-					}
+					dropItem != null ? displayTargetActionSelect(menuSelectItem.item) : menuSelectItem.item.itemSelect();
 					break;
 				}
 			}
