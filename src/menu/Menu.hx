@@ -47,6 +47,17 @@ class Menu extends Board
 		displayItemSelect(applicableTargetItems, tile);
 	}
 	
+	private function displayTargetActionSelect(targetItem:WorldItem):Void {
+		var tile:WorldTile = cast targetItem.parent;
+		menuTargetItems = [];
+		for (targetAction in getApplicableTargetActions(dropItem, targetItem)) {
+			var menuActionItem:MenuTargetActionItem = new MenuTargetActionItem(targetAction);
+			menuActionItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuActionItem.spriteCharCode));
+			menuTargetItems.push(menuActionItem);
+		}
+		drawMenu(cast menuTargetItems, tile);
+	}
+	
 	private function getApplicableTargetActions(dropItem:WorldItem, targetItem:WorldItem):Array<TargetAction> {
 		var currentClass:Any = Type.getClass(dropItem);
 		var containedClasses:Array<String> = [Type.getClassName(currentClass)];
@@ -66,17 +77,6 @@ class Menu extends Board
 			}
 		}
 		return applicableDropActions;
-	}
-	
-	private function displayTargetActionSelect(targetItem:WorldItem):Void {
-		var tile:WorldTile = cast targetItem.parent;
-		menuTargetItems = [];
-		for (targetAction in getApplicableTargetActions(dropItem, targetItem)) {
-			var menuActionItem:MenuTargetActionItem = new MenuTargetActionItem(targetAction);
-			menuActionItem.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(menuActionItem.spriteCharCode));
-			menuTargetItems.push(menuActionItem);
-		}
-		drawMenu(cast menuTargetItems, tile);
 	}
 	
 	private function drawMenu(items:Array<MenuInteractiveItem>, tile:WorldTile):Void {
