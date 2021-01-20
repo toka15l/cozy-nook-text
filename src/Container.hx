@@ -13,18 +13,33 @@ class Container extends WorldItem
 		var actionRemoveItem:SelfAction = new SelfAction(24, 0x00FF00);
 		actionRemoveItem.selfActionFunction = function ():Void {
 			if (contents.length > 0) {
-				if (contents[0].count > 1) {
-					contents[0].count--;
-					var item:WorldItem = Type.createInstance(contents[0].itemClass, []);
-					dispatchEvent(new ContainerEvent(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, item));
+				contents[0].count--; // TODO: add ability to select which container object to remove item from
+				var item:WorldItem = Type.createInstance(contents[0].itemClass, []);
+				if (contents[0].count == 0) {
+					contents.splice(0, 1);
 				}
+				dispatchEvent(new ContainerEvent(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, item));
 			}
 		}
 		selfActions.push(actionRemoveItem);
 		
 		var actionInsertItem:TargetAction = new TargetAction(70, 0xFF0000);
 		actionInsertItem.targetAction = function (dropItem:WorldItem):Void {
-			trace("insert item " + dropItem);
+			var currentClass:Any = Type.getClass(dropItem);
+			var exists:Bool = false;
+			for (containerObject in contents) {
+				if (containerObject.itemClass == currentClass) {
+					exists = true;
+					containerObject.count++;
+					break;
+				}
+			}
+			if (exists == false) {
+				var containerObject:ContainerObject = new ContainerObject();
+				containerObject.itemClass = currentClass;
+				containerObject.count = 1;
+				addItem(containerObject);
+			}
 			dropItem.removeFromTile();
 		}
 		actionInsertItem.applicableClasses = ['WorldItem'];

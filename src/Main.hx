@@ -118,7 +118,7 @@ class Main extends Sprite
 		menu.displayItemSelect(e.items, e.target);
 	}
 	
-	private function requestActions(e:ItemSelectEvent):Void {
+	private function requestActions(e:ItemSelectEvent):Void { // TODO: refactor requestActons -> requestSelfActions or similar
 		menu.displaySelfActionSelect(e.target);
 	}
 	
