@@ -1,15 +1,18 @@
 package;
+import menu.SelfAction;
 import openfl.Lib.*;
 import openfl.display.Bitmap;
 import openfl.display.Sprite;
 import WorldItem.ItemEvent;
 import WorldItem.ItemMoveEvent;
+import WorldItem.ItemTickEvent;
 import WorldTile.TileEvent;
 import Container.ContainerEvent;
 
 class World extends Board
 {
 	private static inline var ITEM_CYCLE_INTERVAL:Int = 800;
+	private static inline var TICK_INTERVAL:Int = 250;
 	private var building:Building = null;
 	private var multipleSelect:Bool = false;
 	private var tilesContainingMultipleItems:Array<WorldTile> = [];
@@ -17,6 +20,7 @@ class World extends Board
 	private var carriedItems:Array<WorldItem> = [];
 	private var cursorX:Int = 0;
 	private var cursorY:Int = 0;
+	private var tickActions:Map<Int, Array<Dynamic>> = [];
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
 		super(spriteBitmapData);
@@ -27,6 +31,8 @@ class World extends Board
 		addEventListener(TileEvent.DEREGISTER_CONTAINS_MULTIPLE_ITEMS, deregisterContainsMultipleItems);
 		addEventListener(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, removeItemFromContainer);
 		addEventListener(ItemEvent.PICKUP, pickUpItem);
+		addEventListener(ItemTickEvent.REGISTER, registerTickEvent);
+		addEventListener(ItemTickEvent.DEREGISTER, deregisterTickEvent);
 		
 		// test dwarf
 		addItemToTile(new Dwarf(), 3, 3);
@@ -57,9 +63,44 @@ class World extends Board
 		addItemToTile(new ButcherBlock(), 4, 3);
 		addItemToTile(new Pickle(), 4, 3);
 		
+		// test cat
+		addItemToTile(new Cat(), 7, 7);
+		
 		// multiple item cycle interval
 		setInterval(cycleItems, ITEM_CYCLE_INTERVAL);
+		
+		// set time tick
+		setInterval(tick, TICK_INTERVAL);
 	}
+	
+	//================================================================================
+    // TIME
+    //================================================================================
+	private function tick():Void {
+		for (key in tickActions.keys()) {
+			if (tickActions[key][0] == key) {
+				tickActions[key][0] = 1;
+				for (i in 1...tickActions[key].length) {
+					tickActions[key][i]();
+				}
+			} else {
+				tickActions[key][0]++;
+			}
+		}
+	}
+	
+	private function registerTickEvent(e:ItemTickEvent):Void {
+		if (tickActions.exists(e.tickFrequency)) {
+			tickActions[e.tickFrequency].push(e.tickFunction);
+		} else {
+			var tickArray:Array<Dynamic> = [1, e.tickFunction];
+			tickActions[e.tickFrequency] = tickArray;
+		}
+	}
+	
+	private function deregisterTickEvent(e:ItemTickEvent):Void {
+		trace("deregister tick event");
+	}	
 	
 	//================================================================================
     // MULTIPLE ITEM CYCLING
@@ -171,6 +212,7 @@ class World extends Board
 		}
 		tile.addItem(item);
 		item.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(item.spriteCharCode));
+		item.registerTickActions();
 	}
 	
 	private function removeItemFromTile(item:WorldItem, tile:WorldTile):Void {

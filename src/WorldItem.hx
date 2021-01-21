@@ -42,6 +42,10 @@ class WorldItem extends Item
 	public function drop():Void {
 		dispatchEvent(new ItemEvent(ItemEvent.DROP));
 	}
+	
+	public function registerTickActions():Void {
+		// exists to be overridden
+	}
 }
 
 class ItemMoveEvent extends Event {
@@ -68,4 +72,18 @@ class ItemEvent extends Event {
 		this.selfActions = selfActions;
         super(type, true, false);
     }
+}
+
+class ItemTickEvent extends Event {
+	public static inline var REGISTER = "register";
+	public static inline var DEREGISTER = "deregister";
+	public var tickFrequency:Int;
+	public var tickFunction:Void->Void;
+	
+	public function new(type:String, tickFrequency:Int = null, tickFunction:Void->Void = null)
+	{
+		this.tickFrequency = tickFrequency;
+		this.tickFunction = tickFunction;
+		super(type, true, false);
+	}
 }
