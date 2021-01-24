@@ -1,13 +1,13 @@
 package;
 import menu.TargetAction;
 import openfl.events.Event;
-import menu.Menu;
 import menu.SelfAction;
 
 class WorldItem extends Item
 {
 	public var selfActions:Array<SelfAction>;
 	public var targetActions:Array<TargetAction>;
+	public var tickActionsRegistered:Bool = false;
 
 	public function new(spriteCharCode:Int, color:Int = null) {
 		super(spriteCharCode, color);

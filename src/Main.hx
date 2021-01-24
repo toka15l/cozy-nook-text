@@ -1,7 +1,6 @@
 package;
 
 import openfl.display.Sprite;
-import openfl.display.Stage;
 import openfl.display.StageDisplayState;
 import openfl.events.KeyboardEvent;
 import openfl.system.System;

@@ -1,5 +1,4 @@
 package;
-import menu.SelfAction;
 import openfl.Lib.*;
 import openfl.display.Bitmap;
 import openfl.display.Sprite;
@@ -151,6 +150,21 @@ class World extends Board
 	}
 	
 	//================================================================================
+    // NEIGHBORS
+    //================================================================================
+	public function getNeighbors(tile:WorldTile):Array<Array<WorldTile>> {
+		var neighbors:Array<Array<WorldTile>> = [];
+		for (x in -1...2) {
+			var currentColumn:Array<WorldTile> = [];
+			for (y in -1...2) {
+				currentColumn.push(cast getChildByName("tile_" + (tile.tileX + x) + "_" + (tile.tileY + y)));
+			}
+			neighbors.push(currentColumn);
+		}
+		return neighbors;
+	}
+	
+	//================================================================================
     // ITEM PICKUP
     //================================================================================	
 	private function removeItemFromContainer(e:ContainerEvent):Void {
@@ -212,7 +226,10 @@ class World extends Board
 		}
 		tile.addItem(item);
 		item.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(item.spriteCharCode));
-		item.registerTickActions();
+		if (item.tickActionsRegistered == false) {
+			item.tickActionsRegistered = true;
+			item.registerTickActions();
+		}
 	}
 	
 	private function removeItemFromTile(item:WorldItem, tile:WorldTile):Void {
