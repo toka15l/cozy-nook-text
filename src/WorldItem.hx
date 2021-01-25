@@ -5,6 +5,8 @@ import menu.SelfAction;
 
 class WorldItem extends Item
 {
+	public var tileX:Int = null;
+	public var tileY:Int = null;
 	public var selfActions:Array<SelfAction>;
 	public var targetActions:Array<TargetAction>;
 	public var tickActionsRegistered:Bool = false;
@@ -21,7 +23,7 @@ class WorldItem extends Item
 	}
 	
 	public function move(distanceX:Int, distanceY:Int):Void {
-		dispatchEvent(new ItemMoveEvent(ItemMoveEvent.MOVE, distanceX, distanceY));
+		dispatchEvent(new WorldItemMoveEvent(WorldItemMoveEvent.MOVE, this, distanceX, distanceY));
 	}
 	
 	public function removeFromTile():Void {
@@ -31,16 +33,16 @@ class WorldItem extends Item
 	
 	public function itemSelect():Void {
 		if (selfActions != null) {
-			dispatchEvent(new ItemEvent(ItemEvent.SELECT, selfActions));
+			dispatchEvent(new WorldItemActionEvent(WorldItemActionEvent.SELECT, this, selfActions));
 		}
 	}
 	
 	public function pickUp():Void {
-		dispatchEvent(new ItemEvent(ItemEvent.PICKUP));
+		dispatchEvent(new WorldItemActionEvent(WorldItemActionEvent.PICKUP, this));
 	}
 	
 	public function drop():Void {
-		dispatchEvent(new ItemEvent(ItemEvent.DROP));
+		dispatchEvent(new WorldItemActionEvent(WorldItemActionEvent.DROP, this));
 	}
 	
 	public function registerTickActions():Void {
@@ -48,42 +50,52 @@ class WorldItem extends Item
 	}
 }
 
-class ItemMoveEvent extends Event {
-	public static inline var MOVE = "move";
-	public var distanceX:Int;
-	public var distanceY:Int;
+class WorldItemEvent extends Event {
+	public var item:WorldItem;
 	
-	public function new(type:String, distanceX:Int, distanceY:Int)
+	public function new(type:String, item:WorldItem)
     {
-		this.distanceX = distanceX;
-		this.distanceY = distanceY;
+		this.item = item;
         super(type, true, false);
     }
 }
 
-class ItemEvent extends Event {
+class WorldItemMoveEvent extends WorldItemEvent {
+	public static inline var MOVE = "move";
+	public var distanceX:Int;
+	public var distanceY:Int;
+	
+	public function new(type:String, item:WorldItem, distanceX:Int = null, distanceY:Int = null)
+    {
+		this.distanceX = distanceX;
+		this.distanceY = distanceY;
+        super(type, item);
+    }
+}
+
+class WorldItemActionEvent extends WorldItemEvent {
 	public static inline var PICKUP = "pickUp";
 	public static inline var DROP = "drop";
 	public static inline var SELECT = "select";
 	public var selfActions:Array<SelfAction> = null;
 	
-	public function new(type:String, selfActions:Array<SelfAction> = null)
+	public function new(type:String, item:WorldItem, selfActions:Array<SelfAction> = null)
     {
 		this.selfActions = selfActions;
-        super(type, true, false);
+        super(type, item);
     }
 }
 
-class ItemTickEvent extends Event {
+class WorldItemTickEvent extends WorldItemEvent {
 	public static inline var REGISTER = "register";
 	public static inline var DEREGISTER = "deregister";
 	public var tickFrequency:Int;
 	public var tickFunction:Void->Void;
 	
-	public function new(type:String, tickFrequency:Int = null, tickFunction:Void->Void = null)
+	public function new(type:String, item:WorldItem, tickFrequency:Int = null, tickFunction:Void->Void = null)
 	{
 		this.tickFrequency = tickFrequency;
 		this.tickFunction = tickFunction;
-		super(type, true, false);
+		super(type, item);
 	}
 }

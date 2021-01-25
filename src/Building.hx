@@ -60,44 +60,44 @@ class Building
 	}
 }
 
-class TopLeft extends WorldItem
-{
+class Wall extends WorldItem {
+	public function new(spriteCharCode:Int) {
+		super(spriteCharCode, 0x696969);
+	}
+}
+
+class TopLeft extends Wall {
 	public function new() {
-		super(201, 0x696969);
+		super(201);
 	}	
 }
 
-class TopRight extends WorldItem
-{
+class TopRight extends Wall {
 	public function new() {
-		super(187, 0x696969);
+		super(187);
 	}	
 }
 
-class BottomLeft extends WorldItem
-{
+class BottomLeft extends Wall {
 	public function new() {
-		super(200, 0x696969);
+		super(200);
 	}	
 }
 
-class BottomRight extends WorldItem
-{
+class BottomRight extends Wall {
 	public function new() {
-		super(188, 0x696969);
+		super(188);
 	}	
 }
 
-class Horizontal extends WorldItem
-{
+class Horizontal extends Wall {
 	public function new() {
-		super(205, 0x696969);
+		super(205);
 	}	
 }
 
-class Vertical extends WorldItem
-{
+class Vertical extends Wall {
 	public function new() {
-		super(186, 0x696969);
+		super(186);
 	}	
 }

@@ -2,11 +2,12 @@ package;
 import openfl.Lib.*;
 import openfl.display.Bitmap;
 import openfl.display.Sprite;
-import WorldItem.ItemEvent;
-import WorldItem.ItemMoveEvent;
-import WorldItem.ItemTickEvent;
+import WorldItem.WorldItemActionEvent;
+import WorldItem.WorldItemMoveEvent;
+import WorldItem.WorldItemTickEvent;
 import WorldTile.TileEvent;
 import Container.ContainerEvent;
+import Cat.CatMoveEvent;
 
 class World extends Board
 {
@@ -25,13 +26,14 @@ class World extends Board
 		super(spriteBitmapData);
 		
 		// event listeners
-		addEventListener(ItemMoveEvent.MOVE, itemMove);
+		addEventListener(WorldItemMoveEvent.MOVE, itemMove);
 		addEventListener(TileEvent.REGISTER_CONTAINS_MULTIPLE_ITEMS, registerContainsMultipleItems);
 		addEventListener(TileEvent.DEREGISTER_CONTAINS_MULTIPLE_ITEMS, deregisterContainsMultipleItems);
 		addEventListener(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, removeItemFromContainer);
-		addEventListener(ItemEvent.PICKUP, pickUpItem);
-		addEventListener(ItemTickEvent.REGISTER, registerTickEvent);
-		addEventListener(ItemTickEvent.DEREGISTER, deregisterTickEvent);
+		addEventListener(WorldItemActionEvent.PICKUP, pickUpItem);
+		addEventListener(WorldItemTickEvent.REGISTER, registerTickEvent);
+		addEventListener(WorldItemTickEvent.DEREGISTER, deregisterTickEvent);
+		addEventListener(CatMoveEvent.REQUEST_RANDOM_EMPTY_COORDINATES_IN_BUILDING, requestRandomEmptyCoordinatesInBuilding);
 		
 		// test dwarf
 		addItemToTile(new Dwarf(), 3, 3);
@@ -73,6 +75,13 @@ class World extends Board
 	}
 	
 	//================================================================================
+    // UTILITIES
+    //================================================================================
+	private function getTileAt(tileX:Int, tileY:Int):WorldTile {
+		return cast getChildByName("tile_" + tileX + "_" + tileY);
+	}
+	
+	//================================================================================
     // TIME
     //================================================================================
 	private function tick():Void {
@@ -88,7 +97,7 @@ class World extends Board
 		}
 	}
 	
-	private function registerTickEvent(e:ItemTickEvent):Void {
+	private function registerTickEvent(e:WorldItemTickEvent):Void {
 		if (tickActions.exists(e.tickFrequency)) {
 			tickActions[e.tickFrequency].push(e.tickFunction);
 		} else {
@@ -97,7 +106,7 @@ class World extends Board
 		}
 	}
 	
-	private function deregisterTickEvent(e:ItemTickEvent):Void {
+	private function deregisterTickEvent(e:WorldItemTickEvent):Void {
 		trace("deregister tick event");
 	}	
 	
@@ -121,11 +130,9 @@ class World extends Board
 	//================================================================================
     // ITEM MOVING
     //================================================================================
-	private function itemMove(e:ItemMoveEvent):Void {
-		var item:WorldItem = cast e.target;
-		var tile:WorldTile = cast item.parent;		
-		addItemToTile(item, tile.tileX + e.distanceX, tile.tileY + e.distanceY);
-		removeItemFromTile(item, tile);
+	private function itemMove(e:WorldItemMoveEvent):Void {
+		removeItemFromTile(e.item, getTileAt(e.item.tileX, e.item.tileY));
+		addItemToTile(e.item, e.item.tileX + e.distanceX, e.item.tileY + e.distanceY);
 	}
 	
 	public function move(distanceX:Int, distanceY:Int):Void {
@@ -149,6 +156,45 @@ class World extends Board
 		}
 	}
 	
+	private function requestRandomEmptyCoordinatesInBuilding(e:CatMoveEvent):Void {
+		// get internal of building
+		var minX:Int = null;
+		var minY:Int = null;
+		var maxX:Int = null;
+		var maxY:Int = null;
+		var distanceFromOrigin:Int = 0;
+		while (minX == null || minY == null || maxX == null || maxY == null) {
+			distanceFromOrigin++;
+			if (minX == null) {
+				var currentMinXTile:WorldTile = getTileAt(e.cat.tileX - distanceFromOrigin, e.cat.tileY);
+				if (currentMinXTile != null && currentMinXTile.containsItemOfClass('Wall') == true) {
+					minX = (e.cat.tileX - distanceFromOrigin) + 1;
+				}
+			}
+			if (minY == null) {
+				var currentMinYTile:WorldTile = getTileAt(e.cat.tileX, e.cat.tileY - distanceFromOrigin);
+				if (currentMinYTile != null && currentMinYTile.containsItemOfClass('Wall') == true) {
+					minY = (e.cat.tileY - distanceFromOrigin) + 1;
+				}
+			}
+			if (maxX == null) {
+				var currentMaxXTile:WorldTile = getTileAt(e.cat.tileX + distanceFromOrigin, e.cat.tileY);
+				if (currentMaxXTile != null && currentMaxXTile.containsItemOfClass('Wall') == true) {
+					maxX = (e.cat.tileX + distanceFromOrigin) - 1;
+				}
+			}
+			if (maxY == null) {
+				var currentMaxYTile:WorldTile = getTileAt(e.cat.tileX, e.cat.tileY + distanceFromOrigin);
+				if (currentMaxYTile != null && currentMaxYTile.containsItemOfClass('Wall') == true) {
+					maxY = (e.cat.tileY + distanceFromOrigin) - 1;
+				}
+			}
+		}
+		// pick random coordinates within building
+		e.cat.desiredX = Math.floor(Math.random() * (maxX - minX + 1) + minX);
+		e.cat.desiredY = Math.floor(Math.random() * (maxY - minY + 1) + minY);
+	}
+	
 	//================================================================================
     // NEIGHBORS
     //================================================================================
@@ -157,7 +203,7 @@ class World extends Board
 		for (x in -1...2) {
 			var currentColumn:Array<WorldTile> = [];
 			for (y in -1...2) {
-				currentColumn.push(cast getChildByName("tile_" + (tile.tileX + x) + "_" + (tile.tileY + y)));
+				currentColumn.push(getTileAt(tile.tileX + x, tile.tileY + y));
 			}
 			neighbors.push(currentColumn);
 		}
@@ -168,14 +214,12 @@ class World extends Board
     // ITEM PICKUP
     //================================================================================	
 	private function removeItemFromContainer(e:ContainerEvent):Void {
-		var item:WorldItem = cast e.target;
-		var tile:WorldTile = cast item.parent;
-		addItemToTile(e.item, tile.tileX, tile.tileY);
+		addItemToTile(e.item, e.container.tileX, e.container.tileY);
 		carriedItems.push(e.item);
 	}
 	
-	private function pickUpItem(e:ItemEvent):Void {
-		carriedItems.push(e.target);
+	private function pickUpItem(e:WorldItemActionEvent):Void {
+		carriedItems.push(e.item);
 	}
 	
 	//================================================================================
@@ -203,7 +247,7 @@ class World extends Board
 			}			
 			carriedItems = [];
 		} else {
-			var tile:WorldTile = cast getChildByName("tile_" + cursorX + "_" + cursorY);
+			var tile:WorldTile = getTileAt(cursorX, cursorY);
 			if (tile != null) {
 				tile.tileSelect();
 			}
@@ -213,15 +257,15 @@ class World extends Board
 	//================================================================================
     // ITEM ADD/REMOVE
     //================================================================================
-	private function addItemToTile(item:WorldItem, x:Int, y:Int):Void {
-		var tile:WorldTile = cast getChildByName("tile_" + x + "_" + y);
+	private function addItemToTile(item:WorldItem, tileX:Int, tileY:Int):Void {
+		var tile:WorldTile = getTileAt(tileX, tileY);
 		if (tile == null) {
 			tile = new WorldTile();
-			tile.tileX = x;
-			tile.tileY = y;
-			tile.x = x * SpriteBitmapData.SPRITE_WIDTH;
-			tile.y = y * SpriteBitmapData.SPRITE_HEIGHT;
-			tile.name = "tile_" + x + "_" + y;
+			tile.tileX = tileX;
+			tile.tileY = tileY;
+			tile.x = tileX * SpriteBitmapData.SPRITE_WIDTH;
+			tile.y = tileY * SpriteBitmapData.SPRITE_HEIGHT;
+			tile.name = "tile_" + tileX + "_" + tileY;
 			addChild(tile);
 		}
 		tile.addItem(item);

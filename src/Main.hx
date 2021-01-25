@@ -7,7 +7,7 @@ import openfl.system.System;
 import openfl.ui.Mouse;
 import menu.Menu;
 import WorldTile.TileEvent;
-import WorldItem.ItemEvent;
+import WorldItem.WorldItemActionEvent;
 
 class Main extends Sprite 
 {
@@ -28,8 +28,8 @@ class Main extends Sprite
 		// event listeners
 		stage.addEventListener(KeyboardEvent.KEY_UP, keyUp);
 		addEventListener(TileEvent.TILE_SELECT, tileSelect);
-		addEventListener(ItemEvent.SELECT, itemSelect);
-		addEventListener(ItemEvent.DROP, dropItem);
+		addEventListener(WorldItemActionEvent.SELECT, itemSelect);
+		addEventListener(WorldItemActionEvent.DROP, dropItem);
 		addEventListener(MenuEvent.EXIT_MENU, exitMenu);
 		
 		// load sprite bitmap data
@@ -116,11 +116,11 @@ class Main extends Sprite
 		menu.displayItemSelect(e.items, e.target);
 	}
 	
-	private function itemSelect(e:ItemEvent):Void {
+	private function itemSelect(e:WorldItemActionEvent):Void {
 		menu.displaySelfActionSelect(e.target);
 	}
 	
-	private function dropItem(e:ItemEvent):Void {
+	private function dropItem(e:WorldItemActionEvent):Void {
 		menu.displayTargetItemSelect(e.target);
 	}
 	
