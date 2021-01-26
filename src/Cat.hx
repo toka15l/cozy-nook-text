@@ -19,7 +19,7 @@ class Cat extends WorldItem
 		
 		// cat walks
 		dispatchEvent(new WorldItemTickEvent(WorldItemTickEvent.REGISTER, this, 1, function () {
-			if (desiredX != null && desiredY != null) {
+			if (desiredX != null && desiredY != null && (desiredX != tileX || desiredY != tileY)) {
 				var movementX:Int = 0;
 				if (tileX > desiredX) {
 					movementX = -1;
