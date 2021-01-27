@@ -62,17 +62,8 @@ class Cat extends WorldItem
 	public function respondToNeighbors(neighbors:Array<Array<WorldTile>>):Void {		
 		for (column in neighbors) {
 			for (tile in column) {
-				if (tile != null && tile.containsItemOfClass('Pickle')) {
-					var exists:Bool = false;
-					for (memory in memories) {
-						if (memory[0] == 'Pickle' && memory[1] == tile.tileX && memory[2] == tile.tileY) {
-							exists = true;
-							break;
-						}
-					}
-					if (exists == false) {
-						memories.push(['Pickle', tile.tileX, tile.tileY]);
-					}
+				if (tile != null && tile.containsItemOfClass('Pickle') && memories.filter(memory -> memory[0] == 'Pickle' && memory[1] == tile.tileX && memory[2] == tile.tileY).length == 0) {
+					memories.push(['Pickle', tile.tileX, tile.tileY]);
 				}
 			}
 		}
