@@ -23,11 +23,10 @@ class Cat extends WorldItem
 		
 		// cat gets hungry
 		dispatchEvent(new WorldItemTickEvent(WorldItemTickEvent.REGISTER, this, 240, function () {
-			trace("hungry");
 			var shortestDistance:Float = null;
 			var rememberedPickles:Array<Array<Any>> = memories.filter(memory -> memory[0] == 'Pickle');
 			for (i in 0...rememberedPickles.length) {
-				var distance:Float = Math.sqrt(Math.pow(rememberedPickles[i][1], 2) + Math.pow(rememberedPickles[i][2], 2));
+				var distance:Float = Math.sqrt(Math.pow((tileX - cast rememberedPickles[i][1]), 2) + Math.pow((tileY - cast rememberedPickles[i][2]), 2));
 				if (shortestDistance == null || distance < shortestDistance) {
 					shortestDistance = distance;
 					desiredX = rememberedPickles[i][1];
@@ -77,7 +76,6 @@ class Cat extends WorldItem
 				}
 			}
 		}
-		trace(memories.toString());
 	}
 }
 
