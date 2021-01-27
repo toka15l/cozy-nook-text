@@ -6,6 +6,7 @@ class Cat extends WorldItem
 {
 	public var desiredX:Int = null;
 	public var desiredY:Int = null;
+	private var memories:Array<Array<Any>> = [];
 	
 	public function new() {
 		super(99);
@@ -36,12 +37,38 @@ class Cat extends WorldItem
 				movementY = 1;
 			}
 			move(movementX, movementY);
+			lookAround();
 		}
+	}
+	
+	private function lookAround():Void {
+		dispatchEvent(new CatMoveEvent(CatMoveEvent.REQUEST_NEIGHBORS, this));
+	}
+	
+	public function respondToNeighbors(neighbors:Array<Array<WorldTile>>):Void {		
+		for (column in neighbors) {
+			for (tile in column) {
+				if (tile != null && tile.containsItemOfClass('Pickle')) {
+					var exists:Bool = false;
+					for (memory in memories) {
+						if (memory[0] == 'Pickle' && memory[1] == tile.tileX && memory[2] == tile.tileY) {
+							exists = true;
+							break;
+						}
+					}
+					if (exists == false) {
+						memories.push(['Pickle', tile.tileX, tile.tileY]);
+					}
+				}
+			}
+		}
+		trace(memories.toString());
 	}
 }
 
 class CatMoveEvent extends Event {
 	public static inline var REQUEST_RANDOM_EMPTY_COORDINATES_IN_BUILDING = "requestRandomEmptyCoordinatesInBuilding";
+	public static inline var REQUEST_NEIGHBORS = "requestNeighbors";
 	public var cat:Cat;
 	
 	public function new(type:String, cat:Cat)

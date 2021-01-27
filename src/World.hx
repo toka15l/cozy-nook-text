@@ -34,6 +34,7 @@ class World extends Board
 		addEventListener(WorldItemTickEvent.REGISTER, registerTickEvent);
 		addEventListener(WorldItemTickEvent.DEREGISTER, deregisterTickEvent);
 		addEventListener(CatMoveEvent.REQUEST_RANDOM_EMPTY_COORDINATES_IN_BUILDING, requestRandomEmptyCoordinatesInBuilding);
+		addEventListener(CatMoveEvent.REQUEST_NEIGHBORS, requestNeighbors);
 		
 		// test dwarf
 		addItemToTile(new Dwarf(), 3, 3);
@@ -198,16 +199,16 @@ class World extends Board
 	//================================================================================
     // NEIGHBORS
     //================================================================================
-	public function getNeighbors(tile:WorldTile):Array<Array<WorldTile>> {
+	public function requestNeighbors(e:CatMoveEvent):Void {
 		var neighbors:Array<Array<WorldTile>> = [];
 		for (x in -1...2) {
 			var currentColumn:Array<WorldTile> = [];
 			for (y in -1...2) {
-				currentColumn.push(getTileAt(tile.tileX + x, tile.tileY + y));
+				currentColumn.push(getTileAt(e.cat.tileX + x, e.cat.tileY + y));
 			}
 			neighbors.push(currentColumn);
 		}
-		return neighbors;
+		e.cat.respondToNeighbors(neighbors);
 	}
 	
 	//================================================================================
