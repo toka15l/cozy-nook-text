@@ -33,7 +33,7 @@ class World extends Board
 		addEventListener(WorldItemActionEvent.PICKUP, pickUpItem);
 		addEventListener(WorldItemTickEvent.REGISTER, registerTickEvent);
 		addEventListener(WorldItemTickEvent.DEREGISTER, deregisterTickEvent);
-		addEventListener(CatMoveEvent.REQUEST_RANDOM_EMPTY_COORDINATES_IN_BUILDING, requestRandomEmptyCoordinatesInBuilding);
+		addEventListener(CatMoveEvent.REQUEST_RANDOM_EMPTY_COORDINATES_IN_BUILDING, requestRandomCoordinatesInBuilding);
 		addEventListener(CatMoveEvent.REQUEST_NEIGHBORS, requestNeighbors);
 		
 		// test dwarf
@@ -157,43 +157,30 @@ class World extends Board
 		}
 	}
 	
-	private function requestRandomEmptyCoordinatesInBuilding(e:CatMoveEvent):Void {
-		// get internal of building
-		var minX:Int = null;
-		var minY:Int = null;
-		var maxX:Int = null;
-		var maxY:Int = null;
+	private function requestRandomCoordinatesInBuilding(e:CatMoveEvent):Void {
+		var boundaries:Array<Int> = getRoomBoundariesContainingOrigin(e.cat.tileX, e.cat.tileY);
+		e.cat.setDesiredCoordinates(Math.floor(Math.random() * (boundaries[1] - boundaries[3] + 1) + boundaries[3]), Math.floor(Math.random() * (boundaries[2] - boundaries[0] + 1) + boundaries[0]));
+	}
+	
+	private function getRoomBoundariesContainingOrigin(tileX:Int, tileY:Int):Array<Int> {
+		var boundaries:Array<Int> = [null, null, null, null]; // [top, right, bottom, left]
 		var distanceFromOrigin:Int = 0;
-		while (minX == null || minY == null || maxX == null || maxY == null) {
+		while (boundaries.indexOf(null) != -1) {
 			distanceFromOrigin++;
-			if (minX == null) {
-				var currentMinXTile:WorldTile = getTileAt(e.cat.tileX - distanceFromOrigin, e.cat.tileY);
-				if (currentMinXTile != null && currentMinXTile.containsItemOfClass('Wall') == true) {
-					minX = (e.cat.tileX - distanceFromOrigin) + 1;
-				}
-			}
-			if (minY == null) {
-				var currentMinYTile:WorldTile = getTileAt(e.cat.tileX, e.cat.tileY - distanceFromOrigin);
-				if (currentMinYTile != null && currentMinYTile.containsItemOfClass('Wall') == true) {
-					minY = (e.cat.tileY - distanceFromOrigin) + 1;
-				}
-			}
-			if (maxX == null) {
-				var currentMaxXTile:WorldTile = getTileAt(e.cat.tileX + distanceFromOrigin, e.cat.tileY);
-				if (currentMaxXTile != null && currentMaxXTile.containsItemOfClass('Wall') == true) {
-					maxX = (e.cat.tileX + distanceFromOrigin) - 1;
-				}
-			}
-			if (maxY == null) {
-				var currentMaxYTile:WorldTile = getTileAt(e.cat.tileX, e.cat.tileY + distanceFromOrigin);
-				if (currentMaxYTile != null && currentMaxYTile.containsItemOfClass('Wall') == true) {
-					maxY = (e.cat.tileY + distanceFromOrigin) - 1;
-				}
-			}
+			boundaries[0] = boundaries[0] == null ? boundarycheck(tileX, tileY - distanceFromOrigin, "y", 1) : boundaries[0];
+			boundaries[1] = boundaries[1] == null ? boundarycheck(tileX + distanceFromOrigin, tileY, "x", -1) : boundaries[1];
+			boundaries[2] = boundaries[2] == null ? boundarycheck(tileX, tileY + distanceFromOrigin, "y", -1) : boundaries[2];
+			boundaries[3] = boundaries[3] == null ? boundarycheck(tileX - distanceFromOrigin, tileY, "x", 1) : boundaries[3];
 		}
-		// pick random coordinates within building
-		e.cat.desiredX = Math.floor(Math.random() * (maxX - minX + 1) + minX);
-		e.cat.desiredY = Math.floor(Math.random() * (maxY - minY + 1) + minY);
+		return boundaries;
+	}
+	
+	private function boundarycheck(tileX:Int, tileY:Int, axis:String, oppositeDirection:Int):Int {
+		var checkTile:WorldTile = getTileAt(tileX, tileY);
+		if (checkTile != null && checkTile.containsItemOfClass('Wall') == true) {
+			return axis == "x" ? tileX + oppositeDirection : tileY + oppositeDirection;
+		}
+		return null;
 	}
 	
 	//================================================================================

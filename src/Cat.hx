@@ -37,6 +37,11 @@ class Cat extends WorldItem
 		}));
 	}
 	
+	public function setDesiredCoordinates(tileX:Int, tileY:Int):Void {
+		desiredX = tileX;
+		desiredY = tileY;
+	}
+	
 	private function moveTowardsDesiredCoordinates():Void {
 		if (desiredX != null && desiredY != null && (desiredX != tileX || desiredY != tileY)) {
 			var movementX:Int = 0;
