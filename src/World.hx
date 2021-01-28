@@ -2,14 +2,17 @@ package;
 import openfl.Lib.*;
 import openfl.display.Bitmap;
 import openfl.display.Sprite;
-import WorldItem.ItemEvent;
-import WorldItem.ItemMoveEvent;
+import WorldItem.WorldItemActionEvent;
+import WorldItem.WorldItemMoveEvent;
+import WorldItem.WorldItemTickEvent;
 import WorldTile.TileEvent;
 import Container.ContainerEvent;
+import Cat.CatMoveEvent;
 
 class World extends Board
 {
 	private static inline var ITEM_CYCLE_INTERVAL:Int = 800;
+	private static inline var TICK_INTERVAL:Int = 250;
 	private var building:Building = null;
 	private var multipleSelect:Bool = false;
 	private var tilesContainingMultipleItems:Array<WorldTile> = [];
@@ -17,16 +20,21 @@ class World extends Board
 	private var carriedItems:Array<WorldItem> = [];
 	private var cursorX:Int = 0;
 	private var cursorY:Int = 0;
+	private var tickActions:Map<Int, Array<Dynamic>> = [];
 	
 	public function new(spriteBitmapData:SpriteBitmapData) {
 		super(spriteBitmapData);
 		
 		// event listeners
-		addEventListener(ItemMoveEvent.MOVE, itemMove);
+		addEventListener(WorldItemMoveEvent.MOVE, itemMove);
 		addEventListener(TileEvent.REGISTER_CONTAINS_MULTIPLE_ITEMS, registerContainsMultipleItems);
 		addEventListener(TileEvent.DEREGISTER_CONTAINS_MULTIPLE_ITEMS, deregisterContainsMultipleItems);
 		addEventListener(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, removeItemFromContainer);
-		addEventListener(ItemEvent.PICKUP, pickUpItem);
+		addEventListener(WorldItemActionEvent.PICKUP, pickUpItem);
+		addEventListener(WorldItemTickEvent.REGISTER, registerTickEvent);
+		addEventListener(WorldItemTickEvent.DEREGISTER, deregisterTickEvent);
+		addEventListener(CatMoveEvent.REQUEST_RANDOM_EMPTY_COORDINATES_IN_BUILDING, requestRandomCoordinatesInBuilding);
+		addEventListener(CatMoveEvent.REQUEST_NEIGHBORS, requestNeighbors);
 		
 		// test dwarf
 		addItemToTile(new Dwarf(), 3, 3);
@@ -57,9 +65,51 @@ class World extends Board
 		addItemToTile(new ButcherBlock(), 4, 3);
 		addItemToTile(new Pickle(), 4, 3);
 		
+		// test cat
+		addItemToTile(new Cat(), 7, 7);
+		
 		// multiple item cycle interval
 		setInterval(cycleItems, ITEM_CYCLE_INTERVAL);
+		
+		// set time tick
+		setInterval(tick, TICK_INTERVAL);
 	}
+	
+	//================================================================================
+    // UTILITIES
+    //================================================================================
+	private function getTileAt(tileX:Int, tileY:Int):WorldTile {
+		return cast getChildByName("tile_" + tileX + "_" + tileY);
+	}
+	
+	//================================================================================
+    // TIME
+    //================================================================================
+	private function tick():Void {
+		for (key in tickActions.keys()) {
+			if (tickActions[key][0] == key) {
+				tickActions[key][0] = 1;
+				for (i in 1...tickActions[key].length) {
+					tickActions[key][i]();
+				}
+			} else {
+				tickActions[key][0]++;
+			}
+		}
+	}
+	
+	private function registerTickEvent(e:WorldItemTickEvent):Void {
+		if (tickActions.exists(e.tickFrequency)) {
+			tickActions[e.tickFrequency].push(e.tickFunction);
+		} else {
+			var tickArray:Array<Dynamic> = [1, e.tickFunction];
+			tickActions[e.tickFrequency] = tickArray;
+		}
+	}
+	
+	private function deregisterTickEvent(e:WorldItemTickEvent):Void {
+		trace("deregister tick event"); // TODO: add tick event de-registering
+	}	
 	
 	//================================================================================
     // MULTIPLE ITEM CYCLING
@@ -81,11 +131,9 @@ class World extends Board
 	//================================================================================
     // ITEM MOVING
     //================================================================================
-	private function itemMove(e:ItemMoveEvent):Void {
-		var item:WorldItem = cast e.target;
-		var tile:WorldTile = cast item.parent;		
-		addItemToTile(item, tile.tileX + e.distanceX, tile.tileY + e.distanceY);
-		removeItemFromTile(item, tile);
+	private function itemMove(e:WorldItemMoveEvent):Void {
+		removeItemFromTile(e.item, getTileAt(e.item.tileX, e.item.tileY));
+		addItemToTile(e.item, e.item.tileX + e.distanceX, e.item.tileY + e.distanceY);
 	}
 	
 	public function move(distanceX:Int, distanceY:Int):Void {
@@ -109,18 +157,57 @@ class World extends Board
 		}
 	}
 	
+	private function requestRandomCoordinatesInBuilding(e:CatMoveEvent):Void {
+		var boundaries:Array<Int> = getRoomBoundariesContainingOrigin(e.cat.tileX, e.cat.tileY);
+		e.cat.setDesiredCoordinates(Math.floor(Math.random() * (boundaries[1] - boundaries[3] + 1) + boundaries[3]), Math.floor(Math.random() * (boundaries[2] - boundaries[0] + 1) + boundaries[0]));
+	}
+	
+	private function getRoomBoundariesContainingOrigin(tileX:Int, tileY:Int):Array<Int> {
+		var boundaries:Array<Int> = [null, null, null, null]; // [top, right, bottom, left]
+		var distanceFromOrigin:Int = 0;
+		while (boundaries.indexOf(null) != -1) {
+			distanceFromOrigin++;
+			boundaries[0] = boundaries[0] == null ? boundarycheck(tileX, tileY - distanceFromOrigin, "y", 1) : boundaries[0];
+			boundaries[1] = boundaries[1] == null ? boundarycheck(tileX + distanceFromOrigin, tileY, "x", -1) : boundaries[1];
+			boundaries[2] = boundaries[2] == null ? boundarycheck(tileX, tileY + distanceFromOrigin, "y", -1) : boundaries[2];
+			boundaries[3] = boundaries[3] == null ? boundarycheck(tileX - distanceFromOrigin, tileY, "x", 1) : boundaries[3];
+		}
+		return boundaries;
+	}
+	
+	private function boundarycheck(tileX:Int, tileY:Int, axis:String, oppositeDirection:Int):Int {
+		var checkTile:WorldTile = getTileAt(tileX, tileY);
+		if (checkTile != null && checkTile.containsItemOfClass('Wall') == true) {
+			return axis == "x" ? tileX + oppositeDirection : tileY + oppositeDirection;
+		}
+		return null;
+	}
+	
+	//================================================================================
+    // NEIGHBORS
+    //================================================================================
+	public function requestNeighbors(e:CatMoveEvent):Void {
+		var neighbors:Array<Array<WorldTile>> = [];
+		for (x in -1...2) {
+			var currentColumn:Array<WorldTile> = [];
+			for (y in -1...2) {
+				currentColumn.push(getTileAt(e.cat.tileX + x, e.cat.tileY + y));
+			}
+			neighbors.push(currentColumn);
+		}
+		e.cat.respondToNeighbors(neighbors);
+	}
+	
 	//================================================================================
     // ITEM PICKUP
     //================================================================================	
 	private function removeItemFromContainer(e:ContainerEvent):Void {
-		var item:WorldItem = cast e.target;
-		var tile:WorldTile = cast item.parent;
-		addItemToTile(e.item, tile.tileX, tile.tileY);
+		addItemToTile(e.item, e.container.tileX, e.container.tileY);
 		carriedItems.push(e.item);
 	}
 	
-	private function pickUpItem(e:ItemEvent):Void {
-		carriedItems.push(e.target);
+	private function pickUpItem(e:WorldItemActionEvent):Void {
+		carriedItems.push(e.item);
 	}
 	
 	//================================================================================
@@ -148,7 +235,7 @@ class World extends Board
 			}			
 			carriedItems = [];
 		} else {
-			var tile:WorldTile = cast getChildByName("tile_" + cursorX + "_" + cursorY);
+			var tile:WorldTile = getTileAt(cursorX, cursorY);
 			if (tile != null) {
 				tile.tileSelect();
 			}
@@ -158,19 +245,23 @@ class World extends Board
 	//================================================================================
     // ITEM ADD/REMOVE
     //================================================================================
-	private function addItemToTile(item:WorldItem, x:Int, y:Int):Void {
-		var tile:WorldTile = cast getChildByName("tile_" + x + "_" + y);
+	private function addItemToTile(item:WorldItem, tileX:Int, tileY:Int):Void {
+		var tile:WorldTile = getTileAt(tileX, tileY);
 		if (tile == null) {
 			tile = new WorldTile();
-			tile.tileX = x;
-			tile.tileY = y;
-			tile.x = x * SpriteBitmapData.SPRITE_WIDTH;
-			tile.y = y * SpriteBitmapData.SPRITE_HEIGHT;
-			tile.name = "tile_" + x + "_" + y;
+			tile.tileX = tileX;
+			tile.tileY = tileY;
+			tile.x = tileX * SpriteBitmapData.SPRITE_WIDTH;
+			tile.y = tileY * SpriteBitmapData.SPRITE_HEIGHT;
+			tile.name = "tile_" + tileX + "_" + tileY;
 			addChild(tile);
 		}
 		tile.addItem(item);
 		item.setBitmapData(spriteBitmapData.getBitmapDataForCharCode(item.spriteCharCode));
+		if (item.tickActionsRegistered == false) {
+			item.tickActionsRegistered = true;
+			item.registerTickActions();
+		}
 	}
 	
 	private function removeItemFromTile(item:WorldItem, tile:WorldTile):Void {

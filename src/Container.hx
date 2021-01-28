@@ -2,6 +2,7 @@ package;
 import openfl.events.Event;
 import menu.SelfAction;
 import menu.TargetAction;
+import WorldItem.WorldItemEvent;
 
 class Container extends WorldItem
 {
@@ -18,7 +19,7 @@ class Container extends WorldItem
 				if (contents[0].count == 0) {
 					contents.splice(0, 1);
 				}
-				dispatchEvent(new ContainerEvent(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, item));
+				dispatchEvent(new ContainerEvent(ContainerEvent.REMOVE_ITEM_FROM_CONTAINER, item, this));
 			}
 		}
 		selfActions.push(actionRemoveItem);
@@ -51,13 +52,13 @@ class Container extends WorldItem
 	}
 }
 
-class ContainerEvent extends Event {
+class ContainerEvent extends WorldItemEvent {
 	public static inline var REMOVE_ITEM_FROM_CONTAINER = "removeItemFromContainer";
-	public var item:WorldItem;
+	public var container:Container;
 	
-	public function new(type:String, item:WorldItem)
+	public function new(type:String, item:WorldItem, container:Container)
     {
-		this.item = item;
-        super(type, true, false);
+		this.container = container;
+        super(type, item);
     }
 }
