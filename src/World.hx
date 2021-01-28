@@ -108,7 +108,7 @@ class World extends Board
 	}
 	
 	private function deregisterTickEvent(e:WorldItemTickEvent):Void {
-		trace("deregister tick event");
+		trace("deregister tick event"); // TODO: add tick event de-registering
 	}	
 	
 	//================================================================================
