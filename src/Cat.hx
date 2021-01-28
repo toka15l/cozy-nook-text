@@ -31,6 +31,7 @@ class Cat extends WorldItem
 					shortestDistance = distance;
 					desiredX = rememberedPickles[i][1];
 					desiredY = rememberedPickles[i][2];
+					// TODO: cat eats food
 				}
 			}
 		}));
