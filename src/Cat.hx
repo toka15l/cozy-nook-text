@@ -24,8 +24,7 @@ class Cat extends Animal
 				var distance:Float = Math.sqrt(Math.pow((tileX - cast rememberedPickles[i][1]), 2) + Math.pow((tileY - cast rememberedPickles[i][2]), 2));
 				if (shortestDistance == null || distance < shortestDistance) {
 					shortestDistance = distance;
-					desiredX = rememberedPickles[i][1];
-					desiredY = rememberedPickles[i][2];
+					setDesiredCoordinates(rememberedPickles[i][1], rememberedPickles[i][2]);
 					// TODO: cat eats food
 				}
 			}
