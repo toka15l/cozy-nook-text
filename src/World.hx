@@ -7,7 +7,7 @@ import WorldItem.WorldItemMoveEvent;
 import WorldItem.WorldItemTickEvent;
 import WorldTile.TileEvent;
 import Container.ContainerEvent;
-import Cat.CatMoveEvent;
+import Animal.AnimalMoveEvent;
 
 class World extends Board
 {
@@ -33,8 +33,8 @@ class World extends Board
 		addEventListener(WorldItemActionEvent.PICKUP, pickUpItem);
 		addEventListener(WorldItemTickEvent.REGISTER, registerTickEvent);
 		addEventListener(WorldItemTickEvent.DEREGISTER, deregisterTickEvent);
-		addEventListener(CatMoveEvent.REQUEST_RANDOM_EMPTY_COORDINATES_IN_BUILDING, requestRandomCoordinatesInBuilding);
-		addEventListener(CatMoveEvent.REQUEST_NEIGHBORS, requestNeighbors);
+		addEventListener(AnimalMoveEvent.REQUEST_RANDOM_EMPTY_COORDINATES_IN_BUILDING, requestRandomCoordinatesInBuilding);
+		addEventListener(AnimalMoveEvent.REQUEST_NEIGHBORS, requestNeighbors);
 		
 		// test dwarf
 		addItemToTile(new Dwarf(), 3, 3);
@@ -157,9 +157,9 @@ class World extends Board
 		}
 	}
 	
-	private function requestRandomCoordinatesInBuilding(e:CatMoveEvent):Void {
-		var boundaries:Array<Int> = getRoomBoundariesContainingOrigin(e.cat.tileX, e.cat.tileY);
-		e.cat.setDesiredCoordinates(Math.floor(Math.random() * (boundaries[1] - boundaries[3] + 1) + boundaries[3]), Math.floor(Math.random() * (boundaries[2] - boundaries[0] + 1) + boundaries[0]));
+	private function requestRandomCoordinatesInBuilding(e:AnimalMoveEvent):Void {
+		var boundaries:Array<Int> = getRoomBoundariesContainingOrigin(e.animal.tileX, e.animal.tileY);
+		e.animal.setDesiredCoordinates(Math.floor(Math.random() * (boundaries[1] - boundaries[3] + 1) + boundaries[3]), Math.floor(Math.random() * (boundaries[2] - boundaries[0] + 1) + boundaries[0]));
 	}
 	
 	private function getRoomBoundariesContainingOrigin(tileX:Int, tileY:Int):Array<Int> {
@@ -186,16 +186,16 @@ class World extends Board
 	//================================================================================
     // NEIGHBORS
     //================================================================================
-	public function requestNeighbors(e:CatMoveEvent):Void {
+	public function requestNeighbors(e:AnimalMoveEvent):Void {
 		var neighbors:Array<Array<WorldTile>> = [];
 		for (x in -1...2) {
 			var currentColumn:Array<WorldTile> = [];
 			for (y in -1...2) {
-				currentColumn.push(getTileAt(e.cat.tileX + x, e.cat.tileY + y));
+				currentColumn.push(getTileAt(e.animal.tileX + x, e.animal.tileY + y));
 			}
 			neighbors.push(currentColumn);
 		}
-		e.cat.respondToNeighbors(neighbors);
+		e.animal.respondToNeighbors(neighbors);
 	}
 	
 	//================================================================================
