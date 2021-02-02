@@ -4,17 +4,35 @@ import openfl.events.Event;
 
 class Animal extends WorldItem
 {
+	private var walkTicks:Int = 2;
+	private var eatTicks:Int = 500;
 	public var desiredX:Int = null;
 	public var desiredY:Int = null;
 	private var memories:Array<Array<Any>> = [];
+	private var willEat:Array<String> = [];
 	
 	public function new(spriteCharCode:Int, color:Int = null) {
 		super(spriteCharCode, color);
 	}
 	
 	public override function registerTickActions():Void {		
-		// cat walks
-		dispatchEvent(new WorldItemTickEvent(WorldItemTickEvent.REGISTER, this, 1, moveTowardsDesiredCoordinates));
+		// walking
+		dispatchEvent(new WorldItemTickEvent(WorldItemTickEvent.REGISTER, this, walkTicks, moveTowardsDesiredCoordinates));
+		
+		// eating
+		dispatchEvent(new WorldItemTickEvent(WorldItemTickEvent.REGISTER, this, eatTicks, function () {
+			var shortestDistance:Float = null;
+			var rememberedFood:Array<Array<Any>> = memories.filter(memory -> willEat.filter(food -> memory[0] == food).length > 0); // TODO: after upgrading to haxe ~4.1 refactor to array `contains` for efficiency
+			for (i in 0...rememberedFood.length) {
+				var distance:Float = Math.sqrt(Math.pow((tileX - cast rememberedFood[i][1]), 2) + Math.pow((tileY - cast rememberedFood[i][2]), 2));
+				if (shortestDistance == null || distance < shortestDistance) {
+					shortestDistance = distance;
+					setDesiredCoordinates(rememberedFood[i][1], rememberedFood[i][2]);
+					trace("eat");
+					// TODO: consume food
+				}
+			}
+		}));
 	}
 	
 	public function setDesiredCoordinates(tileX:Int, tileY:Int):Void {
@@ -48,8 +66,10 @@ class Animal extends WorldItem
 	public function respondToNeighbors(neighbors:Array<Array<WorldTile>>):Void {		
 		for (column in neighbors) {
 			for (tile in column) {
-				if (tile != null && tile.containsItemOfClass('Pickle') && memories.filter(memory -> memory[0] == 'Pickle' && memory[1] == tile.tileX && memory[2] == tile.tileY).length == 0) {
-					memories.push(['Pickle', tile.tileX, tile.tileY]);
+				for (food in willEat) {
+					if (tile != null && tile.containsItemOfClass(food) && memories.filter(memory -> memory[0] == food && memory[1] == tile.tileX && memory[2] == tile.tileY).length == 0) {
+						memories.push([food, tile.tileX, tile.tileY]);
+					}
 				}
 			}
 		}
