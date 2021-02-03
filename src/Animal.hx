@@ -10,6 +10,7 @@ class Animal extends WorldItem
 	public var desiredY:Int = null;
 	private var memories:Array<Array<Any>> = [];
 	private var willEat:Array<String> = [];
+	private var desiredFood:String = "";
 	
 	public function new(spriteCharCode:Int, color:Int = null) {
 		super(spriteCharCode, color);
@@ -29,19 +30,20 @@ class Animal extends WorldItem
 					shortestDistance = distance;
 					setDesiredCoordinates(rememberedFood[i][1], rememberedFood[i][2]);
 					trace("eat");
+					desiredFood = rememberedFood[i][0];
 					// TODO: consume food
 				}
 			}
 		}));
 	}
 	
-	public function setDesiredCoordinates(tileX:Int, tileY:Int):Void {
+	public function setDesiredCoordinates(tileX:Int = null, tileY:Int = null):Void {
 		desiredX = tileX;
 		desiredY = tileY;
 	}
 	
 	private function moveTowardsDesiredCoordinates():Void {
-		if (desiredX != null && desiredY != null && (desiredX != tileX || desiredY != tileY)) {
+		if (desiredX != null && desiredY != null) {
 			var movementX:Int = 0;
 			if (tileX > desiredX) {
 				movementX = -1;
@@ -55,11 +57,33 @@ class Animal extends WorldItem
 				movementY = 1;
 			}
 			move(movementX, movementY);
-			lookAround();
+			requestNeighbors();
 		}
 	}
 	
-	private function lookAround():Void {
+	public override function respondToMove():Void {
+		super.respondToMove();
+		if (desiredX == tileX && desiredY == tileY) {
+			setDesiredCoordinates();
+			requestSelf();
+		}
+	}
+	
+	private function requestEat():Void {
+		dispatchEvent(new AnimalEatEvent(AnimalEatEvent.REQUEST_EAT, this, desiredFood));
+	}
+	
+	private function requestSelf():Void {
+		dispatchEvent(new AnimalMoveEvent(AnimalMoveEvent.REQUEST_SELF, this));
+	}
+	
+	public function respondToSelf(self:WorldTile):Void {
+		if (self.containsItemOfClass(desiredFood)) {
+			requestEat();
+		}
+	}
+	
+	private function requestNeighbors():Void {
 		dispatchEvent(new AnimalMoveEvent(AnimalMoveEvent.REQUEST_NEIGHBORS, this));
 	}
 	
@@ -78,12 +102,26 @@ class Animal extends WorldItem
 
 class AnimalMoveEvent extends Event {
 	public static inline var REQUEST_RANDOM_EMPTY_COORDINATES_IN_BUILDING = "requestRandomEmptyCoordinatesInBuilding";
+	public static inline var REQUEST_SELF = "requestSelf";
 	public static inline var REQUEST_NEIGHBORS = "requestNeighbors";
 	public var animal:Animal;
 	
 	public function new(type:String, animal:Animal)
     {
 		this.animal = animal;
+        super(type, true, false);
+    }
+}
+
+class AnimalEatEvent extends Event {
+	public static inline var REQUEST_EAT = "requestEat";
+	public var animal:Animal;
+	public var foodClass:String;
+	
+	public function new(type:String, animal:Animal, foodClass:String)
+    {
+		this.animal = animal;
+		this.foodClass = foodClass;
         super(type, true, false);
     }
 }

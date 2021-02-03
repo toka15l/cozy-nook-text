@@ -8,6 +8,7 @@ import WorldItem.WorldItemTickEvent;
 import WorldTile.TileEvent;
 import Container.ContainerEvent;
 import Animal.AnimalMoveEvent;
+import Animal.AnimalEatEvent;
 
 class World extends Board
 {
@@ -34,7 +35,9 @@ class World extends Board
 		addEventListener(WorldItemTickEvent.REGISTER, registerTickEvent);
 		addEventListener(WorldItemTickEvent.DEREGISTER, deregisterTickEvent);
 		addEventListener(AnimalMoveEvent.REQUEST_RANDOM_EMPTY_COORDINATES_IN_BUILDING, requestRandomCoordinatesInBuilding);
+		addEventListener(AnimalMoveEvent.REQUEST_SELF, requestSelf);
 		addEventListener(AnimalMoveEvent.REQUEST_NEIGHBORS, requestNeighbors);
+		addEventListener(AnimalEatEvent.REQUEST_EAT, requestEat);
 		
 		// test dwarf
 		addItemToTile(new Dwarf(), 3, 3);
@@ -137,6 +140,7 @@ class World extends Board
 	private function itemMove(e:WorldItemMoveEvent):Void {
 		removeItemFromTile(e.item, getTileAt(e.item.tileX, e.item.tileY));
 		addItemToTile(e.item, e.item.tileX + e.distanceX, e.item.tileY + e.distanceY);
+		e.item.respondToMove();
 	}
 	
 	public function move(distanceX:Int, distanceY:Int):Void {
@@ -158,11 +162,6 @@ class World extends Board
 		for (item in carriedItems) {
 			item.move(distanceX, distanceY);
 		}
-	}
-	
-	private function requestRandomCoordinatesInBuilding(e:AnimalMoveEvent):Void {
-		var boundaries:Array<Int> = getRoomBoundariesContainingOrigin(e.animal.tileX, e.animal.tileY);
-		e.animal.setDesiredCoordinates(Math.floor(Math.random() * (boundaries[1] - boundaries[3] + 1) + boundaries[3]), Math.floor(Math.random() * (boundaries[2] - boundaries[0] + 1) + boundaries[0]));
 	}
 	
 	private function getRoomBoundariesContainingOrigin(tileX:Int, tileY:Int):Array<Int> {
@@ -187,8 +186,12 @@ class World extends Board
 	}
 	
 	//================================================================================
-    // NEIGHBORS
+    // ANIMAL EVENT HANDLING
     //================================================================================
+	public function requestSelf(e:AnimalMoveEvent):Void {
+		e.animal.respondToSelf(getTileAt(e.animal.tileX, e.animal.tileY));
+	}
+	
 	public function requestNeighbors(e:AnimalMoveEvent):Void {
 		var neighbors:Array<Array<WorldTile>> = [];
 		for (x in -1...2) {
@@ -199,6 +202,21 @@ class World extends Board
 			neighbors.push(currentColumn);
 		}
 		e.animal.respondToNeighbors(neighbors);
+	}
+	
+	private function requestRandomCoordinatesInBuilding(e:AnimalMoveEvent):Void {
+		var boundaries:Array<Int> = getRoomBoundariesContainingOrigin(e.animal.tileX, e.animal.tileY);
+		e.animal.setDesiredCoordinates(Math.floor(Math.random() * (boundaries[1] - boundaries[3] + 1) + boundaries[3]), Math.floor(Math.random() * (boundaries[2] - boundaries[0] + 1) + boundaries[0]));
+	}
+	
+	public function requestEat(e:AnimalEatEvent):Void {
+		var tile:WorldTile = getTileAt(e.animal.tileX, e.animal.tileY);
+		if (tile.containsItemOfClass(e.foodClass)) {
+			var foodItem:WorldItem = tile.getContainedItemOfClass(e.foodClass);
+			if (foodItem != null) {
+				tile.removeItem(foodItem);
+			}
+		}
 	}
 	
 	//================================================================================

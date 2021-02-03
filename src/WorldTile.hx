@@ -32,6 +32,22 @@ class WorldTile extends Sprite
 		return false;
 	}
 	
+	public function getContainedItemOfClass(className:String):WorldItem {
+		for (item in items) {
+			var currentClass:Any = Type.getClass(item);
+			if (Type.getClassName(currentClass) == className) {
+				return item;
+			}
+			while (currentClass != WorldItem) {
+				currentClass = Type.getSuperClass(currentClass);
+				if (Type.getClassName(currentClass) == className) {
+					return item;
+				}
+			}
+		}
+		return null;
+	}
+	
 	//================================================================================
     // ITEM ADD/REMOVE
     //================================================================================
