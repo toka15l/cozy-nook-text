@@ -8,7 +8,7 @@ class Animal extends WorldItem
 	private var eatTicks:Int = 500;
 	public var desiredX:Int = null;
 	public var desiredY:Int = null;
-	private var memories:Array<Array<Any>> = [];
+	private var memories:Map<String, Array<Array<Int>>> = [];
 	private var willEat:Array<String> = [];
 	private var desiredFood:String = "";
 	
@@ -23,13 +23,17 @@ class Animal extends WorldItem
 		// eating
 		dispatchEvent(new WorldItemTickEvent(WorldItemTickEvent.REGISTER, this, eatTicks, function () {
 			var shortestDistance:Float = null;
-			var rememberedFood:Array<Array<Any>> = memories.filter(memory -> willEat.filter(food -> memory[0] == food).length > 0); // TODO: after upgrading to haxe ~4.1 refactor to array `contains` for efficiency
-			for (i in 0...rememberedFood.length) {
-				var distance:Float = Math.sqrt(Math.pow((tileX - cast rememberedFood[i][1]), 2) + Math.pow((tileY - cast rememberedFood[i][2]), 2));
-				if (shortestDistance == null || distance < shortestDistance) {
-					shortestDistance = distance;
-					setDesiredCoordinates(rememberedFood[i][1], rememberedFood[i][2]);
-					desiredFood = rememberedFood[i][0];
+			for (food in willEat) {
+				if (memories[food] != null) {
+					desiredFood = food;
+					for (coordinates in memories[food]) {
+						var distance:Float = Math.sqrt(Math.pow((tileX - coordinates[0]), 2) + Math.pow((tileY - coordinates[1]), 2));
+						if (shortestDistance == null || distance < shortestDistance) {
+							shortestDistance = distance;
+							setDesiredCoordinates(coordinates[0], coordinates[1]);
+						}
+					}
+					break;
 				}
 			}
 		}));
@@ -89,8 +93,12 @@ class Animal extends WorldItem
 		for (column in neighboringTiles) {
 			for (tile in column) {
 				for (food in willEat) {
-					if (tile != null && tile.containsItemOfClass(food) && memories.filter(memory -> memory[0] == food && memory[1] == tile.tileX && memory[2] == tile.tileY).length == 0) {
-						memories.push([food, tile.tileX, tile.tileY]);
+					if (tile != null && tile.containsItemOfClass(food)) {
+						if (memories[food] == null) {
+							memories[food] = [[tile.tileX, tile.tileY]];
+						} else if (memories[food].filter(coordinates -> coordinates[0] == tile.tileX && coordinates[1] == tile.tileY).length == 0) {
+							memories[food].push([tile.tileX, tile.tileY]);
+						}
 					}
 				}
 			}
