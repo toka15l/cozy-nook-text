@@ -29,9 +29,7 @@ class Animal extends WorldItem
 				if (shortestDistance == null || distance < shortestDistance) {
 					shortestDistance = distance;
 					setDesiredCoordinates(rememberedFood[i][1], rememberedFood[i][2]);
-					trace("eat");
 					desiredFood = rememberedFood[i][0];
-					// TODO: consume food
 				}
 			}
 		}));
