@@ -35,8 +35,8 @@ class World extends Board
 		addEventListener(WorldItemTickEvent.REGISTER, registerTickEvent);
 		addEventListener(WorldItemTickEvent.DEREGISTER, deregisterTickEvent);
 		addEventListener(AnimalMoveEvent.REQUEST_RANDOM_EMPTY_COORDINATES_IN_BUILDING, requestRandomCoordinatesInBuilding);
-		addEventListener(AnimalMoveEvent.REQUEST_SELF, requestSelf);
-		addEventListener(AnimalMoveEvent.REQUEST_NEIGHBORS, requestNeighbors);
+		addEventListener(AnimalMoveEvent.REQUEST_SELF_TILE, requestSelfTile);
+		addEventListener(AnimalMoveEvent.REQUEST_NEIGHBORING_TILES, requestNeighboringTiles);
 		addEventListener(AnimalEatEvent.REQUEST_EAT, requestEat);
 		
 		// test dwarf
@@ -188,11 +188,11 @@ class World extends Board
 	//================================================================================
     // ANIMAL EVENT HANDLING
     //================================================================================
-	public function requestSelf(e:AnimalMoveEvent):Void {
-		e.animal.respondToSelf(getTileAt(e.animal.tileX, e.animal.tileY));
+	public function requestSelfTile(e:AnimalMoveEvent):Void {
+		e.animal.respondToSelfTile(getTileAt(e.animal.tileX, e.animal.tileY));
 	}
 	
-	public function requestNeighbors(e:AnimalMoveEvent):Void {
+	public function requestNeighboringTiles(e:AnimalMoveEvent):Void {
 		var neighbors:Array<Array<WorldTile>> = [];
 		for (x in -1...2) {
 			var currentColumn:Array<WorldTile> = [];
@@ -201,7 +201,7 @@ class World extends Board
 			}
 			neighbors.push(currentColumn);
 		}
-		e.animal.respondToNeighbors(neighbors);
+		e.animal.respondToNeighboringTiles(neighbors);
 	}
 	
 	private function requestRandomCoordinatesInBuilding(e:AnimalMoveEvent):Void {

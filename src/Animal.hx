@@ -57,7 +57,7 @@ class Animal extends WorldItem
 				movementY = 1;
 			}
 			move(movementX, movementY);
-			requestNeighbors();
+			requestNeighboringTiles();
 		}
 	}
 	
@@ -65,7 +65,7 @@ class Animal extends WorldItem
 		super.respondToMove();
 		if (desiredX == tileX && desiredY == tileY) {
 			setDesiredCoordinates();
-			requestSelf();
+			requestSelfTile();
 		}
 	}
 	
@@ -73,22 +73,22 @@ class Animal extends WorldItem
 		dispatchEvent(new AnimalEatEvent(AnimalEatEvent.REQUEST_EAT, this, desiredFood));
 	}
 	
-	private function requestSelf():Void {
-		dispatchEvent(new AnimalMoveEvent(AnimalMoveEvent.REQUEST_SELF, this));
+	private function requestSelfTile():Void {
+		dispatchEvent(new AnimalMoveEvent(AnimalMoveEvent.REQUEST_SELF_TILE, this));
 	}
 	
-	public function respondToSelf(self:WorldTile):Void {
-		if (self.containsItemOfClass(desiredFood)) {
+	public function respondToSelfTile(selfTile:WorldTile):Void {
+		if (selfTile.containsItemOfClass(desiredFood)) {
 			requestEat();
 		}
 	}
 	
-	private function requestNeighbors():Void {
-		dispatchEvent(new AnimalMoveEvent(AnimalMoveEvent.REQUEST_NEIGHBORS, this));
+	private function requestNeighboringTiles():Void {
+		dispatchEvent(new AnimalMoveEvent(AnimalMoveEvent.REQUEST_NEIGHBORING_TILES, this));
 	}
 	
-	public function respondToNeighbors(neighbors:Array<Array<WorldTile>>):Void {		
-		for (column in neighbors) {
+	public function respondToNeighboringTiles(neighboringTiles:Array<Array<WorldTile>>):Void {		
+		for (column in neighboringTiles) {
 			for (tile in column) {
 				for (food in willEat) {
 					if (tile != null && tile.containsItemOfClass(food) && memories.filter(memory -> memory[0] == food && memory[1] == tile.tileX && memory[2] == tile.tileY).length == 0) {
@@ -102,8 +102,8 @@ class Animal extends WorldItem
 
 class AnimalMoveEvent extends Event {
 	public static inline var REQUEST_RANDOM_EMPTY_COORDINATES_IN_BUILDING = "requestRandomEmptyCoordinatesInBuilding";
-	public static inline var REQUEST_SELF = "requestSelf";
-	public static inline var REQUEST_NEIGHBORS = "requestNeighbors";
+	public static inline var REQUEST_SELF_TILE = "requestSelfTile";
+	public static inline var REQUEST_NEIGHBORING_TILES = "requestNeighboringTiles";
 	public var animal:Animal;
 	
 	public function new(type:String, animal:Animal)
