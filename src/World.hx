@@ -66,6 +66,7 @@ class World extends Board
 		
 		// test fish
 		addItemToTile(new Fish(), 8, 4);
+		addItemToTile(new Fish(), 15, 7);
 		
 		// test butcher block
 		addItemToTile(new ButcherBlock(), 4, 3);

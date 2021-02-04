@@ -23,6 +23,7 @@ class Animal extends WorldItem
 		// eating
 		dispatchEvent(new WorldItemTickEvent(WorldItemTickEvent.REGISTER, this, eatTicks, function () {
 			var shortestDistance:Float = null;
+			trace("hungry");
 			for (food in willEat) {
 				if (memories[food] != null) {
 					desiredFood = food;
@@ -89,7 +90,25 @@ class Animal extends WorldItem
 		dispatchEvent(new AnimalMoveEvent(AnimalMoveEvent.REQUEST_NEIGHBORING_TILES, this));
 	}
 	
-	public function respondToNeighboringTiles(neighboringTiles:Array<Array<WorldTile>>):Void {		
+	public function respondToNeighboringTiles(neighboringTiles:Array<Array<WorldTile>>):Void {
+		// clear out old memories of tile contents
+		// TODO: make this more efficient - currently requires potentially hundreds or thousands of array accesses per animal movement
+		for (x in -1...2) {
+			for (y in -1...2) {
+				for (className in memories.keys()) {
+					var memory:Array<Array<Int>> = memories[className];
+					for (coordinates in memory) {
+						if (coordinates[0] == tileX + x && coordinates[1] == tileY + y) {
+							memory.remove(coordinates);
+							if (memory.length == 0) {
+								memories.remove(className);
+							}
+						}
+					}
+				}
+			}
+		}
+		// add new memories of tile contents
 		for (column in neighboringTiles) {
 			for (tile in column) {
 				for (food in willEat) {
