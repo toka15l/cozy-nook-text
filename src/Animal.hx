@@ -8,8 +8,9 @@ class Animal extends WorldItem
 	private var eatTicks:Int = 500;
 	public var desiredX:Int = null;
 	public var desiredY:Int = null;
-	private var memories:Array<Array<Any>> = [];
+	private var memories:Map<String, Array<Array<Int>>> = [];
 	private var willEat:Array<String> = [];
+	private var desiredFood:String = "";
 	
 	public function new(spriteCharCode:Int, color:Int = null) {
 		super(spriteCharCode, color);
@@ -22,26 +23,30 @@ class Animal extends WorldItem
 		// eating
 		dispatchEvent(new WorldItemTickEvent(WorldItemTickEvent.REGISTER, this, eatTicks, function () {
 			var shortestDistance:Float = null;
-			var rememberedFood:Array<Array<Any>> = memories.filter(memory -> willEat.filter(food -> memory[0] == food).length > 0); // TODO: after upgrading to haxe ~4.1 refactor to array `contains` for efficiency
-			for (i in 0...rememberedFood.length) {
-				var distance:Float = Math.sqrt(Math.pow((tileX - cast rememberedFood[i][1]), 2) + Math.pow((tileY - cast rememberedFood[i][2]), 2));
-				if (shortestDistance == null || distance < shortestDistance) {
-					shortestDistance = distance;
-					setDesiredCoordinates(rememberedFood[i][1], rememberedFood[i][2]);
-					trace("eat");
-					// TODO: consume food
+			trace("hungry");
+			for (food in willEat) {
+				if (memories[food] != null) {
+					desiredFood = food;
+					for (coordinates in memories[food]) {
+						var distance:Float = Math.sqrt(Math.pow((tileX - coordinates[0]), 2) + Math.pow((tileY - coordinates[1]), 2));
+						if (shortestDistance == null || distance < shortestDistance) {
+							shortestDistance = distance;
+							setDesiredCoordinates(coordinates[0], coordinates[1]);
+						}
+					}
+					break;
 				}
 			}
 		}));
 	}
 	
-	public function setDesiredCoordinates(tileX:Int, tileY:Int):Void {
+	public function setDesiredCoordinates(tileX:Int = null, tileY:Int = null):Void {
 		desiredX = tileX;
 		desiredY = tileY;
 	}
 	
 	private function moveTowardsDesiredCoordinates():Void {
-		if (desiredX != null && desiredY != null && (desiredX != tileX || desiredY != tileY)) {
+		if (desiredX != null && desiredY != null) {
 			var movementX:Int = 0;
 			if (tileX > desiredX) {
 				movementX = -1;
@@ -55,20 +60,64 @@ class Animal extends WorldItem
 				movementY = 1;
 			}
 			move(movementX, movementY);
-			lookAround();
+			requestNeighboringTiles();
 		}
 	}
 	
-	private function lookAround():Void {
-		dispatchEvent(new AnimalMoveEvent(AnimalMoveEvent.REQUEST_NEIGHBORS, this));
+	public override function respondToMove():Void {
+		super.respondToMove();
+		if (desiredX == tileX && desiredY == tileY) {
+			setDesiredCoordinates();
+			requestSelfTile();
+		}
 	}
 	
-	public function respondToNeighbors(neighbors:Array<Array<WorldTile>>):Void {		
-		for (column in neighbors) {
+	private function requestEat():Void {
+		dispatchEvent(new AnimalEatEvent(AnimalEatEvent.REQUEST_EAT, this, desiredFood));
+	}
+	
+	private function requestSelfTile():Void {
+		dispatchEvent(new AnimalMoveEvent(AnimalMoveEvent.REQUEST_SELF_TILE, this));
+	}
+	
+	public function respondToSelfTile(selfTile:WorldTile):Void {
+		if (selfTile.containsItemOfClass(desiredFood)) {
+			requestEat();
+		}
+	}
+	
+	private function requestNeighboringTiles():Void {
+		dispatchEvent(new AnimalMoveEvent(AnimalMoveEvent.REQUEST_NEIGHBORING_TILES, this));
+	}
+	
+	public function respondToNeighboringTiles(neighboringTiles:Array<Array<WorldTile>>):Void {
+		// clear out old memories of tile contents
+		// TODO: make this more efficient - currently requires potentially hundreds or thousands of array accesses per animal movement
+		for (x in -1...2) {
+			for (y in -1...2) {
+				for (className in memories.keys()) {
+					var memory:Array<Array<Int>> = memories[className];
+					for (coordinates in memory) {
+						if (coordinates[0] == tileX + x && coordinates[1] == tileY + y) {
+							memory.remove(coordinates);
+							if (memory.length == 0) {
+								memories.remove(className);
+							}
+						}
+					}
+				}
+			}
+		}
+		// add new memories of tile contents
+		for (column in neighboringTiles) {
 			for (tile in column) {
 				for (food in willEat) {
-					if (tile != null && tile.containsItemOfClass(food) && memories.filter(memory -> memory[0] == food && memory[1] == tile.tileX && memory[2] == tile.tileY).length == 0) {
-						memories.push([food, tile.tileX, tile.tileY]);
+					if (tile != null && tile.containsItemOfClass(food)) {
+						if (memories[food] == null) {
+							memories[food] = [[tile.tileX, tile.tileY]];
+						} else if (memories[food].filter(coordinates -> coordinates[0] == tile.tileX && coordinates[1] == tile.tileY).length == 0) {
+							memories[food].push([tile.tileX, tile.tileY]);
+						}
 					}
 				}
 			}
@@ -78,12 +127,26 @@ class Animal extends WorldItem
 
 class AnimalMoveEvent extends Event {
 	public static inline var REQUEST_RANDOM_EMPTY_COORDINATES_IN_BUILDING = "requestRandomEmptyCoordinatesInBuilding";
-	public static inline var REQUEST_NEIGHBORS = "requestNeighbors";
+	public static inline var REQUEST_SELF_TILE = "requestSelfTile";
+	public static inline var REQUEST_NEIGHBORING_TILES = "requestNeighboringTiles";
 	public var animal:Animal;
 	
 	public function new(type:String, animal:Animal)
     {
 		this.animal = animal;
+        super(type, true, false);
+    }
+}
+
+class AnimalEatEvent extends Event {
+	public static inline var REQUEST_EAT = "requestEat";
+	public var animal:Animal;
+	public var foodClass:String;
+	
+	public function new(type:String, animal:Animal, foodClass:String)
+    {
+		this.animal = animal;
+		this.foodClass = foodClass;
         super(type, true, false);
     }
 }

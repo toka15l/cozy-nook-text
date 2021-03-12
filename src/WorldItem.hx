@@ -26,6 +26,10 @@ class WorldItem extends Item
 		dispatchEvent(new WorldItemMoveEvent(WorldItemMoveEvent.MOVE, this, distanceX, distanceY));
 	}
 	
+	public function respondToMove():Void {
+		// exists to be overridden
+	}
+	
 	public function removeFromTile():Void {
 		var tile:WorldTile = cast this.parent;
 		tile.removeItem(this);
